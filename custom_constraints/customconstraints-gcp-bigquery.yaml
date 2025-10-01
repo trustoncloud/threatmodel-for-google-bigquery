@@ -5,7 +5,7 @@ resourceTypes:
 methodTypes:
 - CREATE
 - UPDATE
-condition: "resource.dataSourceId != {authorized dataSourceId}"
+condition: "!(resource.dataSourceId in ['authorizedSource1', 'authorizedSource2'])"
 actionType: DENY
 displayName: "Deny data transfers using unauthorized data sources"
 description: "Deny creating or updating data transfers using unauthorized data sources"
@@ -17,31 +17,67 @@ resourceTypes:
 methodTypes:
 - CREATE
 - UPDATE
-condition: "resource.destinationDatasetId != {authorized dataset destination}"
+condition: "!(resource.destinationDatasetId in ['projects/{project}/datasets/{dataset1}', 'projects/{project}/datasets/{dataset2}'])"
 actionType: DENY
 displayName: "Deny data transfers using unauthorized dataset destinations"
 description: "Deny creating or updating data transfers using unauthorized dataset destinations"
 ---
 # Control Bigquery.C120: Deny BigQuery Data Transfers with an unauthorized transfer configuration
-name: organizations/ORG_ID/customConstraints/custom.bqDtsDenyTransferConfiguration
+name: organizations/ORG_ID/customConstraints/custom.bqDtsDenyDataRefreshWindowDays
 resourceTypes:
 - bigquerydatatransfer.googleapis.com/TransferConfig
 methodTypes:
 - CREATE
 - UPDATE
-condition: resource.dataRefreshWindowDays != {authorized data refresh window} || resource.disabled != true || resource.emailPreferences.enableFailureEmail != true  || resource.schedule != {authorized schedule} || resource.scheduleOptions.disableAutoScheduling != false || resource.scheduleOptionsV2.timeBasedSchedule.schedule != {authorized schedule} || resource.scheduleOptionsV2.eventDrivenSchedule.pubsubSubscription !={authorized Pub/Sub subscription}"
+condition: "(resource.dataRefreshWindowDays == null) || resource.dataRefreshWindowDays != {Authorized Data Refresh Window Days}"
 actionType: DENY
-displayName: "Deny data transfers using unauthorized transfer configuration"
-description: "Deny creating or updating data transfers using unauthorized transfer configuration"
+displayName: "Deny data transfers using unauthorized data refresh window days"
+description: "Deny creating or updating data transfers using unauthorized data refresh window days"
 ---
-# Control Bigquery.C120: Deny BigQuery Data Transfers using an unauthorized CMEK
-name: organizations/ORG_ID/customConstraints/custom.bqDtsDenyDatasetDestinations
+# Control Bigquery.C120: Deny BigQuery Data Transfers with an unauthorized transfer configuration
+name: organizations/ORG_ID/customConstraints/custom.bqDtsDenyDisabledFailureEmail
 resourceTypes:
 - bigquerydatatransfer.googleapis.com/TransferConfig
 methodTypes:
 - CREATE
 - UPDATE
-condition: resource.encryptionConfiguration.kmsKeyName != {authorized CMEK key}
+condition: resource.emailPreferences.enableFailureEmail != true 
+actionType: DENY
+displayName: "Deny data transfers using disabled failure email notifications"
+description: "Deny creating or updating data transfers using disabled failure email notifications"
+---
+# Control Bigquery.C120: Deny BigQuery Data Transfers with an unauthorized transfer configuration
+name: organizations/ORG_ID/customConstraints/custom.bqDtsDenyUnauthorizedSchedule
+resourceTypes:
+- bigquerydatatransfer.googleapis.com/TransferConfig
+methodTypes:
+- CREATE
+- UPDATE
+condition: "!resource.schedule.matches('{Authorized Schedule REGEX}')"
+actionType: DENY
+displayName: "Deny data transfers using an unauthorized schedule"
+description: "Deny creating or updating data transfers using an unauthorized schedule"
+---
+# Control Bigquery.C120: Deny BigQuery Data Transfers with an unauthorized transfer configuration
+name: organizations/ORG_ID/customConstraints/custom.bqDtsDenyUnauthorizedEventDrivenSchedule
+resourceTypes:
+- bigquerydatatransfer.googleapis.com/TransferConfig
+methodTypes:
+- CREATE
+- UPDATE
+condition: "!(resource.scheduleOptionsV2.eventDrivenSchedule.pubsubSubscription in ['projects/proj/subscriptions/sub1', 'projects/proj/subscriptions/sub2'])"
+actionType: DENY
+displayName: "Deny data transfers using unauthorized event-driven schedule"
+description: "Deny creating or updating data transfers using unauthorized event-driven schedule"
+---
+# Control Bigquery.C123: Deny BigQuery Data Transfers using an unauthorized CMEK
+name: organizations/ORG_ID/customConstraints/custom.bqDtsDenyUnauthorizedCMEK
+resourceTypes:
+- bigquerydatatransfer.googleapis.com/TransferConfig
+methodTypes:
+- CREATE
+- UPDATE
+condition: "!resource.encryptionConfiguration.kmsKeyName.matches('{Authorized CMEK Regex}')"
 actionType: DENY
 displayName: "Deny data transfers using an unauthorized CMEK key"
 description: "Deny creating or updating data transfers using an unauthorized CMEK key"
