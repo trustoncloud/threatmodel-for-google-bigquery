@@ -1,0 +1,18 @@
+id: Bigquery.C91
+objective: Bigquery.CO26
+coso: Assurance
+nist_csf: Detect
+effort: High
+description: 'Verify the fingerprints for ML models are generated, embedded, stored, accessed, updated, revoked, and destroyed as per the security requirements.'
+testing: '1) Generate, 2) embed, 3) store, 4) access, 5) update, 6) revoke, or 7) destroy a fingerprint outside the security requirements; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_model_fingerprint'
+  file: 'bigquery_model_fingerprint.rego'
+  test: 'bigquery_model_fingerprint_test.rego'
+  implemented: true
+  modes:
+    - allowlist

@@ -1,0 +1,18 @@
+id: Bigquery.C105
+objective: Bigquery.CO29
+coso: Assurance
+nist_csf: Detect
+effort: Medium
+description: 'Verify listings and data exchanges have only authorized subscriptions.'
+testing: '1) Add an unauthorized subscription, or 2) remove the authorized subscription from a listing and/or data exchange; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_subscription_governance'
+  file: 'bigquery_subscription_governance.rego'
+  test: 'bigquery_subscription_governance_test.rego'
+  implemented: true
+  modes:
+    - allowlist

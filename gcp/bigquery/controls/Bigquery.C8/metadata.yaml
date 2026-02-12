@@ -1,0 +1,18 @@
+id: Bigquery.C8
+objective: Bigquery.CO1
+coso: Assurance
+nist_csf: Detect
+effort: Low
+description: 'Verify only authorized IAM entities are allowed to access the tables, views, and table data in each dataset.'
+testing: 'Configure an unauthorized IAM entity to have access to 1) a table or 2) a view; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_authorized_access'
+  file: 'bigquery_authorized_access.rego'
+  test: 'bigquery_authorized_access_test.rego'
+  implemented: true
+  modes:
+    - allowlist

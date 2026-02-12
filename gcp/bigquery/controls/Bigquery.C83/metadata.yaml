@@ -1,0 +1,18 @@
+id: Bigquery.C83
+objective: Bigquery.CO8
+coso: Assurance
+nist_csf: Detect
+effort: High
+description: 'Verify all BigQuery tables have authorized configurations.'
+testing: 'Create a table with an unauthorized configuration; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_table_availability'
+  file: 'bigquery_table_availability.rego'
+  test: 'bigquery_table_availability_test.rego' # You can re-use the standard test pattern
+  implemented: true
+  modes:
+    - universal

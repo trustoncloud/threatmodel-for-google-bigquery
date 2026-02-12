@@ -1,0 +1,18 @@
+id: Bigquery.C100
+objective: Bigquery.CO8
+coso: Assurance
+nist_csf: Detect
+effort: High
+description: 'Verify all listings have authorized configurations.'
+testing: 'Create a listing with an unauthorized configuration; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_listing_security'
+  file: 'bigquery_listing_security.rego'
+  test: 'bigquery_listing_security_test.rego'
+  implemented: true
+  modes:
+    - allowlist

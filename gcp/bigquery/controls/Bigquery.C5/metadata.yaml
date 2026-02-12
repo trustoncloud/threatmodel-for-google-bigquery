@@ -1,0 +1,18 @@
+id: Bigquery.C5
+objective: Bigquery.CO3
+coso: Assurance
+nist_csf: Detect
+effort: High
+description: 'Verify all BigQuery datasets, tables, and models are backed up according to the requirements.'
+testing: 'Change the backup mechanism to be outside the requirements; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_backup_labels'
+  file: 'bigquery_backup_labels.rego'
+  test: 'bigquery_backup_labels_test.rego'
+  implemented: true
+  modes:
+    - allowlist

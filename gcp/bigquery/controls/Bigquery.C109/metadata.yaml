@@ -1,0 +1,18 @@
+id: Bigquery.C109
+objective: Bigquery.CO30
+coso: Assurance
+nist_csf: Detect
+effort: Medium
+description: 'Verify only authorized entities you control are subscribed to authorized listings and data exchanges.'
+testing: '1) Subscribe to an unauthorized listing and/or data exchange with an entity you control, or 2) subscribe with an unauthorized entity you control to a listing or exchange authorized for other entities you control; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_subscription_ingress'
+  file: 'bigquery_subscription_ingress.rego'
+  test: 'bigquery_subscription_ingress_test.rego'
+  implemented: true
+  modes:
+    - allowlist
