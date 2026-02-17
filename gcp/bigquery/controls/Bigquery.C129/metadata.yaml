@@ -1,0 +1,19 @@
+id: Bigquery.C129
+objective: Bigquery.CO34
+coso: Assurance
+nist_csf: Detect
+effort: Medium
+description: 'Verify all authorized BigQuery projects are allowed to use Gemini.'
+testing: '1) Enable Gemini in an unauthorized BigQuery project, or 2) disable Gemini from an authorized BigQuery project; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_gemini_enablement'
+  file: 'bigquery_gemini_enablement.rego'
+  test: 'bigquery_gemini_enablement_test.rego'
+  implemented: true
+  modes:
+    - allowlist
+    - universal

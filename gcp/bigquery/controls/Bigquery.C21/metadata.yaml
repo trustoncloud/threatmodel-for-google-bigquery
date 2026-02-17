@@ -1,0 +1,19 @@
+id: Bigquery.C21
+objective: Bigquery.CO9
+coso: Assurance
+nist_csf: Detect
+effort: High
+description: 'Verify sensitive data is identified and redacted (e.g., using Cloud DLP).'
+testing: 'Add non-redacted sensitive data; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_dlp_protection'
+  file: 'bigquery_dlp_protection.rego'
+  test: 'bigquery_dlp_protection_test.rego'
+  implemented: true
+  modes:
+    - universal
+    - allowlist

@@ -1,0 +1,18 @@
+id: Bigquery.C34
+objective: Bigquery.CO12
+coso: Assurance
+nist_csf: Detect
+effort: High
+description: 'Verify the expiration time of each BigQuery table is set to its requirements.'
+testing: 'Set the expiration time of a BigQuery table to be outside its requirements; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_table_expiration'
+  file: 'bigquery_table_expiration.rego'
+  test: 'bigquery_table_expiration_test.rego'
+  implemented: true
+  modes:
+    - universal

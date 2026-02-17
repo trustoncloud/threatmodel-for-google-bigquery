@@ -1,0 +1,19 @@
+id: Bigquery.C19
+objective: Bigquery.CO8
+coso: Assurance
+nist_csf: Detect
+effort: High
+description: 'Verify all BigQuery datasets have authorized configurations.'
+testing: 'Create a dataset with an unauthorized configuration; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_authorized_configuration'
+  file: 'bigquery_authorized_configuration.rego'
+  test: 'bigquery_authorized_configuration_test.rego'
+  implemented: true
+  modes:
+    - allowlist
+    - universal

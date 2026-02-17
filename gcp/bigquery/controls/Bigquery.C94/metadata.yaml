@@ -1,0 +1,19 @@
+id: Bigquery.C94
+objective: Bigquery.CO28
+coso: Assurance
+nist_csf: Detect
+effort: Low
+description: 'Verify all required data exchanges are configured as data clean rooms.'
+testing: 'Configure a data exchange required to be a data clean room as a non-data clean room; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_clean_room_enforcement'
+  file: 'bigquery_clean_room_enforcement.rego'
+  test: 'bigquery_clean_room_enforcement_test.rego'
+  implemented: true
+  modes:
+    - allowlist
+    - universal

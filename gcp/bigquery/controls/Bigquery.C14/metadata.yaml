@@ -1,0 +1,18 @@
+id: Bigquery.C14
+objective: Bigquery.CO6
+coso: Assurance
+nist_csf: Detect
+effort: Low
+description: 'Verify only authorized IAM entities are allowed to access sensitive rows of a table.'
+testing: 'Configure an unauthorized IAM entity with access to a sensitive row; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_row_level_security'
+  file: 'bigquery_row_level_security.rego'
+  test: 'bigquery_row_level_security_test.rego'
+  implemented: true
+  modes:
+    - allowlist
