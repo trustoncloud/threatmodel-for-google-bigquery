@@ -35,9 +35,46 @@ jobs:
             exit 0
           fi
 
-          gh pr create \
-            --repo "${REPO}" \
-            --head "${BRANCH}" \
-            --base "${DEFAULT_BRANCH}" \
-            --title "Auto PR: ${BRANCH}" \
-            --body-file .github/pull_request_template.md
+          commit_msg="$(git log -1 --pretty=%B | sed -e 's/[[:space:]]*$//')"
+          if [ -z "$(printf '%s' "${commit_msg}" | tr -d '[:space:]')" ]; then
+            commit_msg="(no commit message found)"
+          fi
+
+          body_file="$(mktemp)"
+          export COMMIT_MSG="${commit_msg}"
+          export TEMPLATE_PATH=".github/pull_request_template.md"
+          export BODY_FILE="${body_file}"
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          template_path = os.environ["TEMPLATE_PATH"]
+          commit_msg = os.environ.get("COMMIT_MSG", "").rstrip()
+          if not commit_msg.strip():
+              commit_msg = "(no commit message found)"
+
+          template = Path(template_path).read_text(encoding="utf-8")
+          marker_match = re.search(
+              r"^(##\s+(?:\d+\.\s+)?Description\s*)$",
+              template,
+              flags=re.MULTILINE,
+          )
+          if marker_match is None:
+              raise SystemExit(
+                  f"Missing a '## ... Description' section heading in {template_path}"
+              )
+
+          marker = marker_match.group(1)
+          replacement = f"{marker}\n\n{commit_msg}\n"
+          body = template.replace(marker, replacement, 1)
+
+          Path(os.environ["BODY_FILE"]).write_text(body, encoding="utf-8")
+          PY
+
+                    gh pr create \
+                      --repo "${REPO}" \
+                      --head "${BRANCH}" \
+                      --base "${DEFAULT_BRANCH}" \
+                      --title "Auto PR: ${BRANCH}" \
+                      --body-file "${body_file}"
