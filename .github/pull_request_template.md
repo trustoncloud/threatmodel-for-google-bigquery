@@ -15,8 +15,6 @@
 - Control ID(s): `Bigquery.C123` (example)
 - Variant(s): `universal` / `allowlist` / `denylist`
 
-## 3. Description
-
 ## 4. Related Issue (Leave blank if not applicable)
 Closes #
 
