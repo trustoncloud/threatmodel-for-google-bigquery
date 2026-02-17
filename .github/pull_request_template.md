@@ -1,10 +1,16 @@
 ﻿## 1. Purpose of this PR
-- [ ] 🐛 Bug fix
-- [ ] ✨ New feature
-- [ ] ♻️ Refactor (no functional changes, no API changes)
-- [ ] ⚙️ Build / Configuration change
+- [ ] 🐛 Bug fix (corrects false positive/false negative or broken behavior)
+- [ ] ✨ New control / attack-scenario coverage
+- [ ] 🔧 Control logic update (existing Rego behavior change)
+- [ ] 🧪 Test-only change (`*_test.rego` only, no production rule changes)
+- [ ] 🗂️ Metadata / mapping update (`metadata.yaml` and/or mapping CSV)
+- [ ] 📝 Documentation/content update (README, threat-model docs, images)
+- [ ] ♻️ Refactor (no functional behavior changes)
+- [ ] ⚙️ Build / configuration / automation change
 
-## 2. Scope
+## 2. Description
+
+## 3. Scope
 - Cloud / Service: `gcp/bigquery` (example)
 - Control ID(s): `Bigquery.C123` (example)
 - Variant(s): `universal` / `allowlist` / `denylist`
