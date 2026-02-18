@@ -1,8 +1,10 @@
-id: Bigquery.C21
+﻿id: Bigquery.C21
 objective: Bigquery.CO9
 coso: Assurance
 nist_csf: Detect
 effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify sensitive data is identified and redacted (e.g., using Cloud DLP).'
 testing: 'Add non-redacted sensitive data; it should be detected.'
 mitigates_threats: []

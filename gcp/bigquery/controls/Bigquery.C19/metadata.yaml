@@ -1,8 +1,10 @@
-id: Bigquery.C19
+﻿id: Bigquery.C19
 objective: Bigquery.CO8
 coso: Assurance
 nist_csf: Detect
 effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify all BigQuery datasets have authorized configurations.'
 testing: 'Create a dataset with an unauthorized configuration; it should be detected.'
 mitigates_threats: []

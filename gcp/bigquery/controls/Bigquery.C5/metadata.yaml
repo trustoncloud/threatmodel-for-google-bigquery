@@ -1,8 +1,10 @@
-id: Bigquery.C5
+﻿id: Bigquery.C5
 objective: Bigquery.CO3
 coso: Assurance
 nist_csf: Detect
 effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify all BigQuery datasets, tables, and models are backed up according to the requirements.'
 testing: 'Change the backup mechanism to be outside the requirements; it should be detected.'
 mitigates_threats: []

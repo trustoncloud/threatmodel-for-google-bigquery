@@ -1,8 +1,10 @@
-id: Bigquery.C118
+﻿id: Bigquery.C118
 objective: Bigquery.CO32
 coso: Assurance
 nist_csf: Detect
 effort: Medium
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify all datasets use their authorized access entity.'
 testing: '1) Allow an unauthorized access entity on a dataset, or 2) remove an authorized access entity on a dataset; it should be detected.'
 mitigates_threats: []

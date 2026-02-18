@@ -1,8 +1,10 @@
-id: Bigquery.C37
+﻿id: Bigquery.C37
 objective: Bigquery.CO7
 coso: Assurance
 nist_csf: Detect
 effort: Low
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify AEAD encryption functions are used to encrypt data at the column level.'
 testing: 'Do not encrypt the data at the column level; it should be detected.'
 mitigates_threats: []

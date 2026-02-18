@@ -1,8 +1,10 @@
-id: Bigquery.C29
+﻿id: Bigquery.C29
 objective: Bigquery.CO7
 coso: Assurance
 nist_csf: Detect
 effort: Low
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify each BigQuery resource is encrypted using an authorized CMEK and its version.'
 testing: 'Use an unauthorized 1) CMEK or a 2) version with a BigQuery resource; it should be detected.'
 mitigates_threats: []

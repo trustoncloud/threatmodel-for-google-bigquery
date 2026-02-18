@@ -1,8 +1,10 @@
-id: Bigquery.C109
+﻿id: Bigquery.C109
 objective: Bigquery.CO30
 coso: Assurance
 nist_csf: Detect
 effort: Medium
+weighted_priority: Low
+weighted_priority_score: 1
 description: 'Verify only authorized entities you control are subscribed to authorized listings and data exchanges.'
 testing: '1) Subscribe to an unauthorized listing and/or data exchange with an entity you control, or 2) subscribe with an unauthorized entity you control to a listing or exchange authorized for other entities you control; it should be detected.'
 mitigates_threats: []

@@ -1,8 +1,10 @@
-id: Bigquery.C34
+﻿id: Bigquery.C34
 objective: Bigquery.CO12
 coso: Assurance
 nist_csf: Detect
 effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify the expiration time of each BigQuery table is set to its requirements.'
 testing: 'Set the expiration time of a BigQuery table to be outside its requirements; it should be detected.'
 mitigates_threats: []

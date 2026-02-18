@@ -1,8 +1,10 @@
-id: Bigquery.C8
+﻿id: Bigquery.C8
 objective: Bigquery.CO1
 coso: Assurance
 nist_csf: Detect
 effort: Low
+weighted_priority: High
+weighted_priority_score: 3
 description: 'Verify only authorized IAM entities are allowed to access the tables, views, and table data in each dataset.'
 testing: 'Configure an unauthorized IAM entity to have access to 1) a table or 2) a view; it should be detected.'
 mitigates_threats: []

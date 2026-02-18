@@ -1,8 +1,10 @@
-id: Bigquery.C112
+﻿id: Bigquery.C112
 objective: Bigquery.CO27
 coso: Assurance
 nist_csf: Detect
 effort: Medium
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify listings and data exchanges use authorized emails.'
 testing: 'For a listing or data exchange, use an unauthorized email; it should be detected.'
 mitigates_threats: []

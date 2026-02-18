@@ -1,8 +1,10 @@
-id: Bigquery.C52
+﻿id: Bigquery.C52
 objective: Bigquery.CO18
 coso: Assurance
 nist_csf: Detect
 effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify the time travel of each BigQuery dataset is set to its requirements.'
 testing: 'Set the time travel of a BigQuery dataset to an unauthorized value; it should be detected.'
 mitigates_threats: []

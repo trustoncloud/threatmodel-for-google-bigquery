@@ -1,8 +1,10 @@
-id: Bigquery.C14
+﻿id: Bigquery.C14
 objective: Bigquery.CO6
 coso: Assurance
 nist_csf: Detect
 effort: Low
+weighted_priority: High
+weighted_priority_score: 3
 description: 'Verify only authorized IAM entities are allowed to access sensitive rows of a table.'
 testing: 'Configure an unauthorized IAM entity with access to a sensitive row; it should be detected.'
 mitigates_threats: []

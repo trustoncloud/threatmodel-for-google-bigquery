@@ -1,8 +1,10 @@
-id: Bigquery.C40
+﻿id: Bigquery.C40
 objective: Bigquery.CO14
 coso: Assurance
 nist_csf: Detect
 effort: Low
+weighted_priority: High
+weighted_priority_score: 3
 description: 'Verify the use of BigQuery Omni as per the requirements.'
 testing: 'Use BigQuery Omni outside the requirements; it should be detected.'
 mitigates_threats: []

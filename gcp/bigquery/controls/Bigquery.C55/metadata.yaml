@@ -1,0 +1,21 @@
+﻿id: Bigquery.C55
+objective: Bigquery.CO19
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify all jobs use an authorized configuration.'
+testing: 'Use an unauthorized configuration with a job; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_job_config'
+  file: 'bigquery_job_config.rego'
+  test: 'bigquery_job_config_test.rego'
+  implemented: true
+  modes:
+    - allowlist
+    - universal

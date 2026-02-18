@@ -1,8 +1,10 @@
-id: Bigquery.C94
+﻿id: Bigquery.C94
 objective: Bigquery.CO28
 coso: Assurance
 nist_csf: Detect
 effort: Low
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify all required data exchanges are configured as data clean rooms.'
 testing: 'Configure a data exchange required to be a data clean room as a non-data clean room; it should be detected.'
 mitigates_threats: []

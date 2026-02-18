@@ -1,8 +1,10 @@
-id: Bigquery.C24
+﻿id: Bigquery.C24
 objective: Bigquery.CO10
 coso: Assurance
 nist_csf: Detect
 effort: Medium
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify each dataset, table, model, connection, job, and listing uses authorized sources and destinations.'
 testing: 'For a BigQuery dataset, table, model, connection, job, or listing, use an unauthorized 1) source or 2) destination; it should be detected.'
 mitigates_threats: []

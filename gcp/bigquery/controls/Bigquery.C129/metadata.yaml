@@ -1,8 +1,10 @@
-id: Bigquery.C129
+﻿id: Bigquery.C129
 objective: Bigquery.CO34
 coso: Assurance
 nist_csf: Detect
 effort: Medium
+weighted_priority: Very Low
+weighted_priority_score: 0
 description: 'Verify all authorized BigQuery projects are allowed to use Gemini.'
 testing: '1) Enable Gemini in an unauthorized BigQuery project, or 2) disable Gemini from an authorized BigQuery project; it should be detected.'
 mitigates_threats: []

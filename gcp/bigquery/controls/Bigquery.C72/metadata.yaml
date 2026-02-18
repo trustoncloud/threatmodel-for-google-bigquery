@@ -1,8 +1,10 @@
-id: Bigquery.C72
+﻿id: Bigquery.C72
 objective: Bigquery.CO23
 coso: Assurance
 nist_csf: Detect
 effort: Medium
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify each query uses an authorized Cloud Storage bucket for its UDF.'
 testing: 'For a UDF, use an unauthorized bucket; it should be detected.'
 mitigates_threats: []

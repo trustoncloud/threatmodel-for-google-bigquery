@@ -1,8 +1,10 @@
-id: Bigquery.C59
+﻿id: Bigquery.C59
 objective: Bigquery.CO21
 coso: Assurance
 nist_csf: Detect
 effort: Medium
+weighted_priority: Medium
+weighted_priority_score: 2
 description: 'Verify the metadata cache mode and staleness of each external table are set to their requirements.'
 testing: 'Set the metadata cache mode and staleness of an external table outside the requirements; it should be detected.'
 mitigates_threats: []

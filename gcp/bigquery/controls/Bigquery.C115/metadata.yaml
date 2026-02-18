@@ -1,0 +1,20 @@
+﻿id: Bigquery.C115
+objective: Bigquery.CO31
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify the restricted export for listings is enabled according to the requirements.'
+testing: 'Enable the restricted export for listings outside the requirements; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_listing_restricted_export'
+  file: 'bigquery_listing_restricted_export.rego'
+  test: 'bigquery_listing_restricted_export_test.rego'
+  implemented: true
+  modes:
+    - universal

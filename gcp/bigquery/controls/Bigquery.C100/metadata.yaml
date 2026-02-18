@@ -1,8 +1,10 @@
-id: Bigquery.C100
+﻿id: Bigquery.C100
 objective: Bigquery.CO8
 coso: Assurance
 nist_csf: Detect
 effort: High
+weighted_priority: Low
+weighted_priority_score: 1
 description: 'Verify all listings have authorized configurations.'
 testing: 'Create a listing with an unauthorized configuration; it should be detected.'
 mitigates_threats: []
