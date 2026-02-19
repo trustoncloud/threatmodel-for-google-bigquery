@@ -1,0 +1,20 @@
+﻿id: Bigquery.C59
+objective: Bigquery.CO21
+coso: Assurance
+nist_csf: Detect
+effort: Medium
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify the metadata cache mode and staleness of each external table are set to their requirements.'
+testing: 'Set the metadata cache mode and staleness of an external table outside the requirements; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_metadata_cache'
+  file: 'bigquery_metadata_cache.rego'
+  test: 'bigquery_metadata_cache_test.rego'
+  implemented: true
+  modes:
+    - allowlist

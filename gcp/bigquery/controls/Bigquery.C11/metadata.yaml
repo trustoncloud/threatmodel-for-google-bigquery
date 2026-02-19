@@ -1,0 +1,20 @@
+﻿id: Bigquery.C11
+objective: Bigquery.CO5
+coso: Assurance
+nist_csf: Detect
+effort: Low
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify only authorized IAM entities are allowed to access sensitive columns of each table and each view.'
+testing: 'Configure an unauthorized IAM entity with access to a sensitive column; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_policy_tag_iam'
+  file: 'bigquery_policy_tag_iam.rego'
+  test: 'bigquery_policy_tag_iam_test.rego'
+  implemented: true
+  modes:
+    - allowlist

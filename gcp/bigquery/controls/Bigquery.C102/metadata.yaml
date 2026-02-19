@@ -1,0 +1,20 @@
+﻿id: Bigquery.C102
+objective: Bigquery.CO27
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Very Low
+weighted_priority_score: 0
+description: 'Verify no sensitive data is included in the fields of listings.'
+testing: 'Add sensitive data to a field of a listing; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_listing_content_check'
+  file: 'bigquery_listing_content_check.rego'
+  test: 'bigquery_listing_content_check_test.rego'
+  implemented: true
+  modes:
+    - denylist

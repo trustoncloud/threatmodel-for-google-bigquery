@@ -1,0 +1,20 @@
+﻿id: Bigquery.C125
+objective: Bigquery.CO33
+coso: Assurance
+nist_csf: Detect
+effort: Medium
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify all organizations or projects use their authorized configuration settings.'
+testing: '1) Deploy unauthorized configuration settings on an organization or project, or 2) remove authorized configuration settings on an organization or project; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_project_security_config'
+  file: 'bigquery_project_security_config.rego'
+  test: 'bigquery_project_security_config_test.rego'
+  implemented: true
+  modes:
+    - universal

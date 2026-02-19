@@ -1,0 +1,20 @@
+﻿id: Bigquery.C80
+objective: Bigquery.CO25
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify all ML models have an authorized expiration time.'
+testing: 'Create an ML model with an unauthorized expiration time; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_model_expiration'
+  file: 'bigquery_model_expiration.rego'
+  test: 'bigquery_model_expiration_test.rego'
+  implemented: true
+  modes:
+    - universal

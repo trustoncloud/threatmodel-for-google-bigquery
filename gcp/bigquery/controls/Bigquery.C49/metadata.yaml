@@ -1,0 +1,20 @@
+﻿id: Bigquery.C49
+objective: Bigquery.CO17
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify all BigQuery models are registered with the Vertex AI Model Registry according to their requirements.'
+testing: 'Register a model with a Vertex AI Model Registry outside the requirements; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_vertex_registration'
+  file: 'bigquery_vertex_registration.rego'
+  test: 'bigquery_vertex_registration_test.rego'
+  implemented: true
+  modes:
+    - universal

@@ -1,0 +1,22 @@
+﻿id: Bigquery.C40
+objective: Bigquery.CO14
+coso: Assurance
+nist_csf: Detect
+effort: Low
+weighted_priority: High
+weighted_priority_score: 3
+description: 'Verify the use of BigQuery Omni as per the requirements.'
+testing: 'Use BigQuery Omni outside the requirements; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+ccr:
+  name: 'bigquery_omni_governance'
+  file: 'bigquery_omni_policy.rego' # Primary file (Wiz picks one main, but both run)
+  test: 'bigquery_omni_policy_test.rego'
+  implemented: true
+  modes:
+    - universal
+    - allowlist

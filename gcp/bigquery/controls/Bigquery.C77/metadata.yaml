@@ -1,0 +1,20 @@
+﻿id: Bigquery.C77
+objective: Bigquery.CO8
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Low
+weighted_priority_score: 1
+description: 'Verify all asynchronous query jobs have authorized configurations.'
+testing: 'Create an asynchronous query job with unauthorized configurations; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_job_safety_config'
+  file: 'bigquery_job_safety_config.rego'
+  test: 'bigquery_job_safety_config_test.rego'
+  implemented: true
+  modes:
+    - allowlist

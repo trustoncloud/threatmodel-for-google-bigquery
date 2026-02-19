@@ -1,0 +1,20 @@
+﻿id: Bigquery.C52
+objective: Bigquery.CO18
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify the time travel of each BigQuery dataset is set to its requirements.'
+testing: 'Set the time travel of a BigQuery dataset to an unauthorized value; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_time_travel'
+  file: 'bigquery_time_travel.rego'
+  test: 'bigquery_time_travel_test.rego'
+  implemented: true
+  modes:
+    - universal

@@ -1,0 +1,20 @@
+﻿id: Bigquery.C62
+objective: Bigquery.CO8
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify all reservations and their assignments use an authorized configuration.'
+testing: 'Use an unauthorized configuration with 1) a reservation, or 2) an assignment; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_reservation_config'
+  file: 'bigquery_reservation_config.rego'
+  test: 'bigquery_reservation_config_test.rego'
+  implemented: true
+  modes:
+    - allowlist

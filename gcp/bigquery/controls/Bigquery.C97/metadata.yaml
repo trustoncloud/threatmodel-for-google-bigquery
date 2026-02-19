@@ -1,0 +1,21 @@
+﻿id: Bigquery.C97
+objective: Bigquery.CO8
+coso: Assurance
+nist_csf: Detect
+effort: High
+weighted_priority: Low
+weighted_priority_score: 1
+description: 'Verify all data exchanges have authorized configurations.'
+testing: 'Create a data exchange with an unauthorized configuration; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_exchange_exposure'
+  file: 'bigquery_exchange_exposure.rego'
+  test: 'bigquery_exchange_exposure_test.rego'
+  implemented: true
+  modes:
+    - allowlist
+    - universal

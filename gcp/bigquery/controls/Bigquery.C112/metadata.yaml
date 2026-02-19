@@ -1,0 +1,20 @@
+﻿id: Bigquery.C112
+objective: Bigquery.CO27
+coso: Assurance
+nist_csf: Detect
+effort: Medium
+weighted_priority: Medium
+weighted_priority_score: 2
+description: 'Verify listings and data exchanges use authorized emails.'
+testing: 'For a listing or data exchange, use an unauthorized email; it should be detected.'
+mitigates_threats: []
+assured_by: ''
+depends_on: ''
+retired: 'false'
+ccr:
+  name: 'bigquery_contact_domain_check'
+  file: 'bigquery_contact_domain_check.rego'
+  test: 'bigquery_contact_domain_check_test.rego'
+  implemented: true
+  modes:
+    - allowlist
