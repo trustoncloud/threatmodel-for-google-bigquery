@@ -32,16 +32,16 @@
       "score": "Yes"
     },
     "number_of_actions": {
-      "score": 176
+      "score": 177
     },
     "number_of_iam_permissions": {
       "score": 123
     },
     "number_of_events": {
-      "score": 126
+      "score": 127
     },
     "event_coverage": {
-      "score": "64.1"
+      "score": "64.4"
     },
     "api_without_event": {
       "score": 52
@@ -600,7 +600,7 @@
     "Bigquery.T21": {
       "feature_class": "Bigquery.FC1",
       "name": "Misconfiguration of a dataset causing loss of integrity and availability, or privilege escalation by modification of the dataset's access array",
-      "description": "A dataset is a top-level container used to organize and control access to tables and views. Certain default configurations and options can be set at the organization, project, or dataset level, which indirectly affect the tables within that dataset. An attacker can create or update a dataset with unauthorized values for these configurations to cause loss of integrity and availability (e.g., setting an unauthorized value for defaultTableExpirationMs to delete a table automatically when its expirationTime is reached) or create or modify an access array for a dataset to escalate privileges.",
+      "description": "A dataset is a top-level container used to organize and control access to tables and views. Certain default configurations and options can be set at the organization, project, or dataset level, which indirectly affect the tables within that dataset. An attacker can create or update a dataset with unauthorized values for these configurations to cause loss of integrity and availability (e.g., setting an unauthorized value for defaultTableExpirationMs to delete a table automatically when its expirationTime is reached), create or modify an access array for a dataset to escalate privileges, or restore deleted data within the time travel window, potentially exposing sensitive data.",
       "access": {
         "OR": [
           "bigquery.datasets.create",
@@ -616,10 +616,10 @@
       },
       "hlgoal": "DataManipulation",
       "mitre_attack": "TA0004",
-      "cvss": "CVSS:3.1/AV:A/AC:H/PR:H/UI:N/S:U/C:N/I:H/A:H",
+      "cvss": "CVSS:3.1/AV:A/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
       "retired": "false",
       "cvss_severity": "Medium",
-      "cvss_score": 5.7
+      "cvss_score": 6.4
     },
     "Bigquery.T22": {
       "feature_class": "Bigquery.FC6",
@@ -1206,6 +1206,18 @@
         "AAT-03",
         "CFG-02",
         "CHG-04"
+      ],
+      "retired": "false"
+    },
+    "Bigquery.CO35": {
+      "description": "Opt into enforcement of the granular permission model",
+      "scf": [
+        "CHG-04",
+        "IAC-02",
+        "IAC-15",
+        "IAC-16",
+        "IAC-20",
+        "IAC-21"
       ],
       "retired": "false"
     }
@@ -1824,7 +1836,7 @@
       "retired": "false",
       "assured_by": "Bigquery.C5",
       "depends_on": "Bigquery.C3",
-      "description": "Ensure each BigQuery dataset, table, and model is backed up (e.g., by creating snapshots or exports) according to the requirements and is restorable.",
+      "description": "Ensure each BigQuery dataset, table, and model is backed up (e.g., by creating snapshots or exports) according to the requirements and is restorable (e.g., using time travel window).",
       "testing": "Request the mechanism ensuring BigQuery datasets, tables, and models are backed up (e.g., by creating snapshots or exports) according to their requirements, the evidence of their execution, and their regular testing of restoration.",
       "effort": "High",
       "mitigate": [
@@ -2100,7 +2112,7 @@
       "retired": "false",
       "assured_by": "",
       "depends_on": "",
-      "description": "Define the criteria for the sensitivity of columns in each table and each view, and their requirements for data protection (e.g., using BigQuery column-level security, column-level data masking, custom masking routines, restriction analysis rules, list overlap analysis rules, aggregation threshold analysis rules, differential privacy clauses, or data clean rooms).",
+      "description": "Define the criteria for the sensitivity of columns in each table and each view, and their requirements for data protection (e.g., using BigQuery column-level security, column-level data masking, column-level data policies, custom masking routines, restriction analysis rules, list overlap analysis rules, aggregation threshold analysis rules, differential privacy clauses, or data clean rooms).",
       "testing": "Request the criteria for the sensitivity of columns in a table and each view and their requirements for data protection.",
       "effort": "Very Low",
       "mitigate": [
@@ -6300,6 +6312,53 @@
       "weighted_priority_score": 1,
       "queryable_objective_id": 22,
       "queryable_id": 137
+    },
+    "Bigquery.C138": {
+      "coso": "Directive",
+      "nist_csf": "Protect",
+      "objective": "Bigquery.CO35",
+      "retired": "false",
+      "assured_by": "Bigquery.C139",
+      "depends_on": "",
+      "description": "Ensure the granular permission model is enabled for dataset Access Control Lists (ACLs) (i.e., enable_fine_grained_dataset_acls_option is set to true at the organization or project level).",
+      "testing": "Request the mechanism ensuring the granular permission model is enabled for dataset ACLs, and the evidence of its execution.",
+      "effort": "Medium",
+      "mitigate": [
+        {
+          "threat": "Bigquery.T13",
+          "impact": "Medium",
+          "priority": 2.0,
+          "max_dependency": null,
+          "priority_overall": 2.0,
+          "cvss": "Medium"
+        }
+      ],
+      "feature_class": [
+        "Bigquery.FC4"
+      ],
+      "weighted_priority": "Medium",
+      "weighted_priority_score": 2,
+      "queryable_objective_id": 35,
+      "queryable_id": 138
+    },
+    "Bigquery.C139": {
+      "coso": "Assurance",
+      "nist_csf": "Detect",
+      "objective": "Bigquery.CO35",
+      "retired": "false",
+      "assured_by": "",
+      "depends_on": "",
+      "description": "Verify the granular permission model is enabled for dataset ACLs.",
+      "testing": "Disable the granular permission model for dataset ACLs; it should be detected.",
+      "effort": "Medium",
+      "mitigate": [],
+      "feature_class": [
+        "Bigquery.FC4"
+      ],
+      "weighted_priority": "Medium",
+      "weighted_priority_score": 2,
+      "queryable_objective_id": 35,
+      "queryable_id": 139
     }
   },
   "actions": {
@@ -8260,6 +8319,17 @@
       "event_name": "-",
       "stage": "v1",
       "action_id_int": 180
+    },
+    "Bigquery.A181": {
+      "action_description": "Undeletes a dataset which is within time travel window based on datasetid. If a time is specified, the dataset version deleted at that time is undeleted, else the last live version is undeleted.",
+      "api": "bigquery.datasets.undelete",
+      "endpoint": "bigquery",
+      "feature_class": "Bigquery.FC1",
+      "feature_class_action_type": "other",
+      "iam_permission": "bigquery.datasets.create",
+      "event_name": "google.cloud.bigquery.v2.DatasetService.UndeleteDataset",
+      "stage": "v2",
+      "action_id_int": 181
     }
   },
   "dfd": {
