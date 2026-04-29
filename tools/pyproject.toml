@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "threatmodel-compiler"
+version = "0.1.0"
+description = "Compile threatmodel-gcp-bigquery.json into multi-target detection content."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "sqlglot>=23",
+]
+
+[project.scripts]
+threatmodel-compile = "threatmodel_compiler.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["threatmodel_compiler*"]
+
+[tool.pytest.ini_options]
+testpaths = ["threatmodel_compiler/tests"]
+addopts = "-q"

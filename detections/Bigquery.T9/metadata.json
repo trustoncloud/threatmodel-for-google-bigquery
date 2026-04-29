@@ -1,0 +1,39 @@
+{
+  "threat_id": "Bigquery.T9",
+  "name": "Escalate privileges, loss of availability or integrity of data, or exfiltrate data via an unauthorized query on a dataset or table",
+  "feature_class": "Bigquery.FC1",
+  "hlgoal": "DataTheft",
+  "mitre_tactic": "TA0010",
+  "mitre_tactic_name": "Exfiltration",
+  "mitre_techniques": [
+    {
+      "id": "T1567.002",
+      "name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage"
+    },
+    {
+      "id": "T1537",
+      "name": "Transfer Data to Cloud Account"
+    }
+  ],
+  "atlas_techniques": [
+    {
+      "id": "AML.T0024",
+      "name": "Exfiltration via ML Inference API"
+    }
+  ],
+  "cvss_severity": "High",
+  "cvss_score": 8.0,
+  "required_permissions": [
+    "bigquery.jobs.create",
+    "bigquery.tables.getData",
+    "bigquery.datasets.update"
+  ],
+  "optional_permissions": [],
+  "emitted_artifacts": [
+    "bigquery_sql",
+    "chronicle_yaral",
+    "splunk_spl",
+    "sentinel_kql"
+  ],
+  "source_of_truth": "threatmodel-gcp-bigquery.json"
+}

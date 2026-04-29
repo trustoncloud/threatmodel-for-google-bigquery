@@ -1,0 +1,28 @@
+rule bigquery_t1_data_destruction {
+  meta:
+    author       = "threatmodel-compiler"
+    severity     = "Low"
+    threat_id    = "Bigquery.T1"
+    mitre_tactic = "TA0040"
+    mitre_id     = "T1485"
+    description  = "Destruction of BigQuery data via dataset/table delete."
+
+  events:
+    $e.metadata.event_type = "RESOURCE_DELETION"
+    $e.metadata.product_name = "Google Cloud BigQuery"
+    (
+      $e.metadata.product_event_type = "google.cloud.bigquery.v2.TableService.DeleteTable" or
+      $e.metadata.product_event_type = "google.cloud.bigquery.v2.DatasetService.DeleteDataset"
+    )
+    $e.principal.user.email_addresses = $actor
+    $e.target.resource.name = $resource
+
+  match:
+    $actor, $resource over 5m
+
+  outcome:
+    $risk_score = 35
+
+  condition:
+    $e
+}

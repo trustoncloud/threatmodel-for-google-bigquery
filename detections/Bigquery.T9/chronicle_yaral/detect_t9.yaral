@@ -1,0 +1,36 @@
+rule bigquery_t9_unauthorized_query_pattern {
+  meta:
+    author       = "threatmodel-compiler"
+    severity     = "High"
+    threat_id    = "Bigquery.T9"
+    mitre_tactic = "TA0010"
+    mitre_id     = "T1530"
+    description  = "Unauthorized query pattern: large SELECT * scans, oversized scans, or broad table fanout."
+
+  events:
+    $e.metadata.product_name = "Google Cloud BigQuery"
+    $e.metadata.product_event_type = "google.cloud.bigquery.v2.JobService.InsertJob"
+    $e.target.resource.attribute.labels["statement_type"] = "SELECT"
+    $e.principal.user.email_addresses = $actor
+
+    (
+      // SELECT * scanning > 1 GiB
+      (re.regex($e.target.resource.attribute.labels["query"], `(?i)select\s+\*\s+from`) and
+       cast.as_int($e.target.resource.attribute.labels["bytes_processed"]) > 1073741824)
+      or
+      // Any SELECT scanning > 50 GiB
+      cast.as_int($e.target.resource.attribute.labels["bytes_processed"]) > 53687091200
+      or
+      // Broad fanout
+      cast.as_int($e.target.resource.attribute.labels["referenced_table_count"]) >= 10
+    )
+
+  match:
+    $actor over 10m
+
+  outcome:
+    $risk_score = 80
+
+  condition:
+    $e
+}

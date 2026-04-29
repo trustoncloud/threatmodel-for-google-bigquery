@@ -1,0 +1,42 @@
+{
+  "threat_id": "Bigquery.T1",
+  "name": "Destruction of data by deleting dataset or table",
+  "feature_class": "Bigquery.FC1",
+  "hlgoal": "DoS",
+  "mitre_tactic": "TA0040",
+  "mitre_tactic_name": "Impact",
+  "mitre_techniques": [
+    {
+      "id": "T1485",
+      "name": "Data Destruction"
+    },
+    {
+      "id": "T1486",
+      "name": "Data Encrypted for Impact"
+    },
+    {
+      "id": "T1565.001",
+      "name": "Stored Data Manipulation"
+    },
+    {
+      "id": "T1531",
+      "name": "Account Access Removal"
+    }
+  ],
+  "atlas_techniques": [],
+  "cvss_severity": "Low",
+  "cvss_score": 3.5,
+  "required_permissions": [
+    "bigquery.tables.delete"
+  ],
+  "optional_permissions": [
+    "bigquery.datasets.delete"
+  ],
+  "emitted_artifacts": [
+    "bigquery_sql",
+    "chronicle_yaral",
+    "splunk_spl",
+    "sentinel_kql"
+  ],
+  "source_of_truth": "threatmodel-gcp-bigquery.json"
+}

@@ -1,0 +1,26 @@
+rule bigquery_t6_exfil_to_unauthorized_gcs {
+  meta:
+    author       = "threatmodel-compiler"
+    severity     = "Medium"
+    threat_id    = "Bigquery.T6"
+    mitre_tactic = "TA0010"
+    mitre_id     = "T1567.002"
+    description  = "BigQuery extract job writing to a GCS bucket outside the authorized export allowlist."
+
+  events:
+    $e.metadata.product_name = "Google Cloud BigQuery"
+    $e.metadata.product_event_type = "google.cloud.bigquery.v2.JobService.InsertJob"
+    $e.target.resource.attribute.labels["job_type"] = "EXTRACT"
+    $e.target.resource.attribute.labels["destination_uri"] = $dest
+    not re.regex($dest, `^gs://(authorized-export-bucket-1|authorized-export-bucket-2)/`)
+    $e.principal.user.email_addresses = $actor
+
+  match:
+    $actor, $dest over 5m
+
+  outcome:
+    $risk_score = 65
+
+  condition:
+    $e
+}

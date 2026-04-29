@@ -1,0 +1,42 @@
+{
+  "threat_id": "Bigquery.T6",
+  "name": "Exfiltration of data by exporting tables to other services",
+  "feature_class": "Bigquery.FC1",
+  "hlgoal": "DataTheft",
+  "mitre_tactic": "TA0010",
+  "mitre_tactic_name": "Exfiltration",
+  "mitre_techniques": [
+    {
+      "id": "T1567.002",
+      "name": "Exfiltration Over Web Service: Exfiltration to Cloud Storage"
+    },
+    {
+      "id": "T1537",
+      "name": "Transfer Data to Cloud Account"
+    }
+  ],
+  "atlas_techniques": [
+    {
+      "id": "AML.T0024",
+      "name": "Exfiltration via ML Inference API"
+    }
+  ],
+  "cvss_severity": "Medium",
+  "cvss_score": 4.2,
+  "required_permissions": [
+    "bigquery.tables.export",
+    "bigquery.jobs.create",
+    "bigquery.tables.getData"
+  ],
+  "optional_permissions": [
+    "storage.objects.create",
+    "storage.objects.delete"
+  ],
+  "emitted_artifacts": [
+    "bigquery_sql",
+    "chronicle_yaral",
+    "splunk_spl",
+    "sentinel_kql"
+  ],
+  "source_of_truth": "threatmodel-gcp-bigquery.json"
+}

@@ -1,0 +1,70 @@
+name: compile-detections
+
+on:
+  push:
+    tags:
+      - "v*"
+    paths:
+      - "threatmodel-gcp-bigquery.json"
+      - "tools/threatmodel_compiler/**"
+      - ".github/workflows/compile-detections.yml"
+  pull_request:
+    paths:
+      - "threatmodel-gcp-bigquery.json"
+      - "tools/threatmodel_compiler/**"
+      - ".github/workflows/compile-detections.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate compiler + emit detections
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install compiler dev deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest sqlglot
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.8.5"
+
+      - name: Compile reference detections
+        run: |
+          PYTHONPATH=tools python -m threatmodel_compiler --repo-root . compile \
+            --threats T1 T6 T9
+
+      - name: Run pytest validation suite
+        run: |
+          PYTHONPATH=tools python -m pytest tools/threatmodel_compiler/tests -v
+
+      - name: Upload generated detections
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-detections
+          path: detections/
+          retention-days: 14
+
+      - name: Detect drift between checked-in and freshly compiled detections
+        if: github.event_name == 'pull_request'
+        run: |
+          # Show any diff between freshly compiled output and what's in the PR.
+          # Hard-fails so that contributors are forced to commit the regenerated artifacts.
+          if ! git diff --exit-code --stat detections/; then
+            echo "::error::detections/ is out of sync with the compiler output."
+            echo "Run: PYTHONPATH=tools python -m threatmodel_compiler --repo-root . compile"
+            echo "Then commit the regenerated files."
+            exit 1
+          fi

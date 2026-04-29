@@ -1,0 +1,85 @@
+# GCP IAM permission -> Cloud Audit Log signal mapping.
+#
+# Each entry maps a BigQuery / Analytics Hub IAM permission to:
+#   service_name: the audit log service (bigquery.googleapis.com, etc.)
+#   method_names: list of methodName values that emit on this permission
+#   log_type:     data_access | admin_activity | system_event
+#   notes:        free-form, surfaced into emitted detection metadata
+#
+# Coverage policy: this file ships with the permissions used by the seeded
+# reference threats (T1, T6, T9). The compiler emits a clear error if a threat
+# references a permission absent from the map; expanding coverage is then a
+# focused PR adding entries here, not a code change.
+
+bigquery.tables.delete:
+  service_name: bigquery.googleapis.com
+  method_names:
+    - google.cloud.bigquery.v2.TableService.DeleteTable
+    - tableservice.delete
+  log_type: admin_activity
+  notes: Direct table deletion. High-signal in admin activity logs.
+
+bigquery.datasets.delete:
+  service_name: bigquery.googleapis.com
+  method_names:
+    - google.cloud.bigquery.v2.DatasetService.DeleteDataset
+    - datasetservice.delete
+  log_type: admin_activity
+  notes: Dataset deletion implicitly removes all contained tables.
+
+bigquery.tables.export:
+  service_name: bigquery.googleapis.com
+  method_names:
+    - google.cloud.bigquery.v2.JobService.InsertJob
+    - jobservice.insert
+  log_type: data_access
+  notes: |
+    Export jobs surface as JobInsert with configuration.extract.destinationUris.
+    Detection should match on extract config presence, not the permission alone.
+
+bigquery.jobs.create:
+  service_name: bigquery.googleapis.com
+  method_names:
+    - google.cloud.bigquery.v2.JobService.InsertJob
+    - jobservice.insert
+    - jobservice.jobcompleted
+  log_type: data_access
+  notes: |
+    Broadest BigQuery signal — every query/export/load/copy generates this.
+    Detections must constrain on configuration.* sub-fields to avoid false positives.
+
+bigquery.tables.getData:
+  service_name: bigquery.googleapis.com
+  method_names:
+    - google.cloud.bigquery.v2.JobService.InsertJob
+    - jobservice.insert
+  log_type: data_access
+  notes: |
+    Materializes through query jobs; typically observed via JobInsert with
+    configuration.query.statementType=SELECT and a referenced table.
+
+bigquery.datasets.update:
+  service_name: bigquery.googleapis.com
+  method_names:
+    - google.cloud.bigquery.v2.DatasetService.UpdateDataset
+    - google.cloud.bigquery.v2.DatasetService.PatchDataset
+    - datasetservice.update
+    - datasetservice.patch
+  log_type: admin_activity
+  notes: |
+    Used in T9's escalation path (case-sensitivity flip on dataset to bypass IAM).
+    Lower-volume than JobInsert; sensible to alert on principal+resource pair.
+
+storage.objects.create:
+  service_name: storage.googleapis.com
+  method_names:
+    - storage.objects.create
+  log_type: data_access
+  notes: Destination of a BigQuery extract job in the GCS-export case.
+
+storage.objects.delete:
+  service_name: storage.googleapis.com
+  method_names:
+    - storage.objects.delete
+  log_type: data_access
+  notes: Pre-export housekeeping by attacker, used as corroborating signal.

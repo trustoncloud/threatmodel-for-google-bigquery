@@ -1,0 +1,131 @@
+{
+  "name": "BigQuery Threat Model \u2014 Detection Coverage",
+  "versions": {
+    "attack": "15",
+    "navigator": "5.0.0",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "Auto-generated coverage layer derived from threatmodel-gcp-bigquery.json. 3 threats mapped to 6 ATT&CK techniques.",
+  "filters": {
+    "platforms": [
+      "IaaS",
+      "SaaS",
+      "Google Workspace"
+    ]
+  },
+  "layout": {
+    "layout": "side",
+    "showName": true,
+    "showID": true
+  },
+  "techniques": [
+    {
+      "techniqueID": "T1485",
+      "tactic": "impact",
+      "score": 1,
+      "comment": "",
+      "color": "",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "Bigquery.T1",
+          "value": "Destruction of data by deleting dataset or table"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1486",
+      "tactic": "impact",
+      "score": 1,
+      "comment": "",
+      "color": "",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "Bigquery.T1",
+          "value": "Destruction of data by deleting dataset or table"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1565.001",
+      "tactic": "impact",
+      "score": 1,
+      "comment": "",
+      "color": "",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "Bigquery.T1",
+          "value": "Destruction of data by deleting dataset or table"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1531",
+      "tactic": "impact",
+      "score": 1,
+      "comment": "",
+      "color": "",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "Bigquery.T1",
+          "value": "Destruction of data by deleting dataset or table"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1567.002",
+      "tactic": "exfiltration",
+      "score": 2,
+      "comment": "",
+      "color": "",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "Bigquery.T6",
+          "value": "Exfiltration of data by exporting tables to other services"
+        },
+        {
+          "name": "Bigquery.T9",
+          "value": "Escalate privileges, loss of availability or integrity of data, or exfiltrate data via an unauthorized query on a dataset or table"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1537",
+      "tactic": "exfiltration",
+      "score": 2,
+      "comment": "",
+      "color": "",
+      "enabled": true,
+      "metadata": [
+        {
+          "name": "Bigquery.T6",
+          "value": "Exfiltration of data by exporting tables to other services"
+        },
+        {
+          "name": "Bigquery.T9",
+          "value": "Escalate privileges, loss of availability or integrity of data, or exfiltrate data via an unauthorized query on a dataset or table"
+        }
+      ]
+    }
+  ],
+  "gradient": {
+    "colors": [
+      "#ffffff",
+      "#fcd116",
+      "#cc2410"
+    ],
+    "minValue": 0,
+    "maxValue": 2
+  },
+  "legendItems": [
+    {
+      "label": "Score = number of modeled threats touching this technique",
+      "color": "#fcd116"
+    }
+  ]
+}
