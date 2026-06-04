@@ -1,0 +1,91 @@
+# customer.gcp.bigquery.example.yml — GCP BigQuery variable file for sigma rules.
+# Supplies every variable referenced by the GCP BigQuery rule library. 
+# Pass this single file at conversion time
+#
+# Copy this file and replace every value with your own projects, service accounts, 
+# reservations, etc.
+#
+# Every variable is suffixed with the owning control ID (`_cNNN`) so a value
+# tuned for one control can never leak into another control.
+
+name: example customer (gcp bigquery)
+priority: 10
+vars:
+  # C63 — unauthorized reservation create/update. Fires on a `maxSlots` or
+  # `edition` value outside its list.
+  authorized_reservation_max_slots_c63:
+    - 100
+    - 500
+    - 1000
+  authorized_reservation_editions_c63:
+    - ENTERPRISE
+    - ENTERPRISE_PLUS
+
+  # C64 — unauthorized reservation assignment changes. `assignee` is a project /
+  # folder / organization resource (not a service account), matched exactly.
+  authorized_assignee_paths_c64:
+    - 'projects/987654321098'
+    - 'projects/123456789012'
+  authorized_assignment_parent_prefixes_c64:
+    - 'projects/987654321098/locations/'
+
+  # C88 — unauthorized transfer config changes. `dataSourceId` is a Google-defined
+  # value (e.g. scheduled_query, google_cloud_storage — list yours via the
+  # dataSources.list API); `destinationDatasetId` is a bare dataset ID (no dots).
+  # `authorized_transfer_schedules_c88` is matched exactly against BigQuery's
+  # free-form schedule string, so copy your real schedules verbatim. Format:
+  # https://cloud.google.com/appengine/docs/flexible/python/scheduling-jobs-with-cron-yaml#the_schedule_format
+  authorized_data_source_ids_c88:
+    - google_cloud_storage
+  authorized_destination_datasets_c88:
+    - org_prod_analytics
+  authorized_transfer_service_accounts_c88:
+    - 'transfer-svc@org-prod.iam.gserviceaccount.com'
+  authorized_pubsub_topic_paths_c88:
+    - 'projects/org-prod-data/topics/analytics'
+    - 'projects/org-prod-data/topics/data-platform-ops'
+  authorized_transfer_schedules_c88:
+    - 'every 24 hours'
+    - 'every day 00:00'
+
+  # C132 — reservation hard failover mode (unauthorized principal / prefix).
+  authorized_principals_c132:
+    - 'data-platform@org-prod.iam.gserviceaccount.com'
+  authorized_reservation_path_prefixes_c132:
+    - 'projects/org-prod-data/locations/US/reservations/prod-'
+    - 'projects/org-prod-data/locations/EU/reservations/prod-'
+
+transformations:
+  - id: expand_authorized_reservation_max_slots_c63
+    type: value_placeholders
+    include: [authorized_reservation_max_slots_c63]
+  - id: expand_authorized_reservation_editions_c63
+    type: value_placeholders
+    include: [authorized_reservation_editions_c63]
+  - id: expand_authorized_assignee_paths_c64
+    type: value_placeholders
+    include: [authorized_assignee_paths_c64]
+  - id: expand_authorized_assignment_parent_prefixes_c64
+    type: value_placeholders
+    include: [authorized_assignment_parent_prefixes_c64]
+  - id: expand_authorized_data_source_ids_c88
+    type: value_placeholders
+    include: [authorized_data_source_ids_c88]
+  - id: expand_authorized_destination_datasets_c88
+    type: value_placeholders
+    include: [authorized_destination_datasets_c88]
+  - id: expand_authorized_transfer_service_accounts_c88
+    type: value_placeholders
+    include: [authorized_transfer_service_accounts_c88]
+  - id: expand_authorized_pubsub_topic_paths_c88
+    type: value_placeholders
+    include: [authorized_pubsub_topic_paths_c88]
+  - id: expand_authorized_transfer_schedules_c88
+    type: value_placeholders
+    include: [authorized_transfer_schedules_c88]
+  - id: expand_authorized_principals_c132
+    type: value_placeholders
+    include: [authorized_principals_c132]
+  - id: expand_authorized_reservation_path_prefixes_c132
+    type: value_placeholders
+    include: [authorized_reservation_path_prefixes_c132]

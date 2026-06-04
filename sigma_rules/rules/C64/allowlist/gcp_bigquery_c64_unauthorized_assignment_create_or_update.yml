@@ -1,0 +1,44 @@
+title: GCP BigQuery C64 - Unauthorized Assignment Create Or Update
+id: 48f009a0-d389-4e92-992c-813c971dd67f
+status: experimental
+description: Monitor the creation/modification of unauthorized assignments (e.g., by using Cloud Logging event "google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment" and its fields request.assignment.assignee, request.assignment.jobType, and request.parent, and event "google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment" and its fields request.assignment.assignee and request.assignment.jobType).
+testing: Create/update the assignment with unauthorized values; it should be detected.
+notes: |
+    Fires when a CreateAssignment / UpdateAssignment event has an assignee outside `%authorized_assignee_paths_c64%`, a `jobType` outside (QUERY, PIPELINE), or a parent outside `%authorized_assignment_parent_prefixes_c64%`.
+references:
+    - https://cloud.google.com/bigquery/docs/reference/reservations/rest/v1/projects.locations.reservations.assignments
+    - https://cloud.google.com/bigquery/docs/reservations-tasks
+author: TrustOnCloud
+date: 2026-03-10
+modified: 2026-03-29
+tags:
+    - trustoncloud.gcp.bigquery
+    - trustoncloud.control.bigquery.c64
+logsource:
+    product: gcp
+    service: cloudaudit
+detection:
+    selection_service:
+        protoPayload.serviceName: bigqueryreservation.googleapis.com
+    selection_event:
+        protoPayload.methodName|contains:
+            - google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment
+            - google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment
+    selection_assignee:
+        protoPayload.request.assignment.assignee|exists: true
+    selection_job_type:
+        protoPayload.request.assignment.jobType|exists: true
+    selection_parent:
+        protoPayload.request.parent|exists: true
+    filter_authorized_assignee:
+        protoPayload.request.assignment.assignee|expand: '%authorized_assignee_paths_c64%'
+    filter_authorized_job_type:
+        protoPayload.request.assignment.jobType:
+            - QUERY
+            - PIPELINE
+    filter_authorized_parent:
+        protoPayload.request.parent|startswith|expand: '%authorized_assignment_parent_prefixes_c64%'
+    condition: selection_service and selection_event and ((selection_assignee and not filter_authorized_assignee) or (selection_job_type and not filter_authorized_job_type) or (selection_parent and not filter_authorized_parent))
+falsepositives:
+    - Recently approved assignment targets or scopes missing from the allowlists.
+level: medium

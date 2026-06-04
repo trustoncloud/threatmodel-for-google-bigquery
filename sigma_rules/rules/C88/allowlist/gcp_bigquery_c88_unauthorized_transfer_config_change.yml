@@ -1,0 +1,57 @@
+title: GCP BigQuery C88 - Unauthorized Transfer Config Change
+id: eb7c0302-9c0a-4ca8-aa72-6843d9c4b3a2
+status: experimental
+description: Monitor the creation/modification of unauthorized data transfers (e.g., by using Cloud Logging events "google.cloud.bigquery.datatransfer.v1.DataTransferService.CreateTransferConfig" and "google.cloud.bigquery.datatransfer.v1.DataTransferService.UpdateTransferConfig" and their fields request.serviceAccountName, request.transferConfig.dataSourceId, request.transferConfig.destinationDatasetId, request.transferConfig.emailPreferences, request.transferConfig.notificationPubsubTopic, and request.transferConfig.schedule).
+testing: Create/update an unauthorized data transfer; it should be detected.
+notes: |
+    Fires when a CreateTransferConfig / UpdateTransferConfig event has any of `serviceAccountName`, `dataSourceId`, `destinationDatasetId`, `notificationPubsubTopic`, `enableFailureEmail`, or the transfer schedule outside its authorized list. Schedule values use the human-readable form (e.g. `every 24 hours`) — set the approved ones in `%authorized_transfer_schedules_c88%`.
+references:
+    - https://docs.cloud.google.com/bigquery/docs/audit-logging
+    - https://docs.cloud.google.com/bigquery/docs/reference/datatransfer/rest/v1/projects.transferConfigs
+    - https://docs.cloud.google.com/bigquery/docs/reference/datatransfer/rest/v1/EmailPreferences
+    - https://cloud.google.com/appengine/docs/flexible/python/scheduling-jobs-with-cron-yaml#the_schedule_format
+author: TrustOnCloud
+date: 2026-03-10
+modified: 2026-05-24
+tags:
+    - trustoncloud.gcp.bigquery
+    - trustoncloud.control.bigquery.c88
+logsource:
+    product: gcp
+    service: cloudaudit
+detection:
+    selection_service:
+        protoPayload.serviceName: bigquerydatatransfer.googleapis.com
+    selection_event:
+        protoPayload.methodName|contains:
+            - google.cloud.bigquery.datatransfer.v1.DataTransferService.CreateTransferConfig
+            - google.cloud.bigquery.datatransfer.v1.DataTransferService.UpdateTransferConfig
+    selection_service_account:
+        protoPayload.request.serviceAccountName|exists: true
+    selection_data_source:
+        protoPayload.request.transferConfig.dataSourceId|exists: true
+    selection_destination_dataset:
+        protoPayload.request.transferConfig.destinationDatasetId|exists: true
+    selection_notification_topic:
+        protoPayload.request.transferConfig.notificationPubsubTopic|exists: true
+    selection_failure_email_preference:
+        protoPayload.request.transferConfig.emailPreferences.enableFailureEmail|exists: true
+    selection_schedule:
+        protoPayload.request.transferConfig.scheduleOptionsV2.timeBasedSchedule.schedule|exists: true
+    filter_authorized_service_account:
+        protoPayload.request.serviceAccountName|expand: '%authorized_transfer_service_accounts_c88%'
+    filter_authorized_data_source:
+        protoPayload.request.transferConfig.dataSourceId|expand: '%authorized_data_source_ids_c88%'
+    filter_authorized_destination_dataset:
+        protoPayload.request.transferConfig.destinationDatasetId|expand: '%authorized_destination_datasets_c88%'
+    filter_authorized_notification_topic:
+        protoPayload.request.transferConfig.notificationPubsubTopic|expand: '%authorized_pubsub_topic_paths_c88%'
+    filter_authorized_failure_email_preference:
+        protoPayload.request.transferConfig.emailPreferences.enableFailureEmail:
+            - true
+    filter_authorized_schedule:
+        protoPayload.request.transferConfig.scheduleOptionsV2.timeBasedSchedule.schedule|expand: '%authorized_transfer_schedules_c88%'
+    condition: selection_service and selection_event and ((selection_service_account and not filter_authorized_service_account) or (selection_data_source and not filter_authorized_data_source) or (selection_destination_dataset and not filter_authorized_destination_dataset) or (selection_notification_topic and not filter_authorized_notification_topic) or (selection_failure_email_preference and not filter_authorized_failure_email_preference) or (selection_schedule and not filter_authorized_schedule))
+falsepositives:
+    - Approved transfer configuration updates not yet synchronized with policy allowlists.
+level: medium
