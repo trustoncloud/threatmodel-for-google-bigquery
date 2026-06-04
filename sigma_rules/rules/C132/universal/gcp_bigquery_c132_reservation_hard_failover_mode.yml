@@ -1,0 +1,32 @@
+title: GCP BigQuery C132 - Reservation Hard Failover Mode
+id: 2715cef8-50ea-46f3-9f6f-5d36de37608d
+status: experimental
+description: Monitor the failover mode of a reservation (e.g., by using Cloud Logging event "google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation" and its field request.failoverMode).
+testing: Fail over a reservation in hard mode; it should be detected.
+notes: |
+    Fires on every FailoverReservation event whose `failoverMode` is HARD or omitted (omitted defaults to HARD per the API).
+references:
+    - https://docs.cloud.google.com/bigquery/docs/reference/reservations/rest/v1/projects.locations.reservations/failoverReservation
+    - https://docs.cloud.google.com/bigquery/docs/reference/reservations/rpc/google.cloud.bigquery.reservation.v1
+author: TrustOnCloud
+date: 2026-03-10
+modified: 2026-03-29
+tags:
+    - trustoncloud.gcp.bigquery
+    - trustoncloud.control.bigquery.c132
+logsource:
+    product: gcp
+    service: cloudaudit
+detection:
+    selection_service:
+        protoPayload.serviceName: bigqueryreservation.googleapis.com
+    selection_event:
+        protoPayload.methodName: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation
+    selection_failover_mode_hard:
+        protoPayload.request.failoverMode: HARD
+    selection_failover_mode_missing:
+        protoPayload.request.failoverMode|exists: false
+    condition: selection_service and selection_event and (selection_failover_mode_hard or selection_failover_mode_missing)
+falsepositives:
+    - Approved disaster recovery exercises that temporarily require hard failover mode.
+level: informational

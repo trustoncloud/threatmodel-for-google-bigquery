@@ -1,0 +1,37 @@
+title: GCP BigQuery C132 - Reservation Hard Failover Mode
+id: 4e936fb8-2fa2-43ad-b7d8-5160c2bc3719
+status: experimental
+description: Monitor the failover mode of a reservation (e.g., by using Cloud Logging event "google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation" and its field request.failoverMode).
+testing: Fail over a reservation in hard mode; it should be detected.
+notes: |
+    Fires on HARD-failover events unless the reservation path starts with a prefix in `%authorized_reservation_path_prefixes_c132%` or the principal is in `%authorized_principals_c132%`. A missing `failoverMode` is treated as HARD (the API default).
+references:
+    - https://docs.cloud.google.com/bigquery/docs/reference/reservations/rest/v1/projects.locations.reservations/failoverReservation
+    - https://docs.cloud.google.com/bigquery/docs/reference/reservations/rpc/google.cloud.bigquery.reservation.v1
+author: TrustOnCloud
+date: 2026-03-10
+modified: 2026-05-24
+tags:
+    - trustoncloud.gcp.bigquery
+    - trustoncloud.control.bigquery.c132
+logsource:
+    product: gcp
+    service: cloudaudit
+detection:
+    selection_service:
+        protoPayload.serviceName: bigqueryreservation.googleapis.com
+    selection_event:
+        protoPayload.methodName: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation
+    selection_failover_mode_hard:
+        protoPayload.request.failoverMode: HARD
+    selection_failover_mode_missing:
+        protoPayload.request.failoverMode|exists: false
+    filter_authorized_principal:
+        protoPayload.authenticationInfo.principalEmail|expand: '%authorized_principals_c132%'
+    filter_authorized_reservation:
+        protoPayload.resourceName|startswith|expand: '%authorized_reservation_path_prefixes_c132%'
+    condition: selection_service and selection_event and (selection_failover_mode_hard or selection_failover_mode_missing) and not (filter_authorized_principal or filter_authorized_reservation)
+falsepositives:
+    - Approved disaster recovery exercises where the principal or reservation scope is allowlisted.
+level: informational
+

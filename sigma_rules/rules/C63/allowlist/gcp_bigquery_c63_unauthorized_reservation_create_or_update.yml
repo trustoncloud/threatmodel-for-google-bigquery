@@ -1,0 +1,38 @@
+title: GCP BigQuery C63 - Unauthorized Reservation Create Or Update
+id: 32d2db3a-8159-4682-8055-f49866f3c7aa
+status: experimental
+description: Monitor the creation/modification of unauthorized reservations (e.g., by using Cloud Logging event "google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation" and "google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation", and their fields request.reservation.autoscale.maxSlots and request.reservation.edition).
+testing: Create/update the reservation with unauthorized values; it should be detected.
+notes: |
+    Fires when a CreateReservation / UpdateReservation event has `autoscale.maxSlots` outside `%authorized_reservation_max_slots_c63%` or `edition` outside `%authorized_reservation_editions_c63%`.
+references:
+    - https://cloud.google.com/bigquery/docs/reference/reservations/rest/v1/projects.locations.reservations
+    - https://cloud.google.com/bigquery/docs/reservations-tasks
+author: TrustOnCloud
+date: 2026-03-10
+modified: 2026-03-29
+tags:
+    - trustoncloud.gcp.bigquery
+    - trustoncloud.control.bigquery.c63
+logsource:
+    product: gcp
+    service: cloudaudit
+detection:
+    selection_service:
+        protoPayload.serviceName: bigqueryreservation.googleapis.com
+    selection_event:
+        protoPayload.methodName|contains:
+            - google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation
+            - google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation
+    selection_max_slots:
+        protoPayload.request.reservation.autoscale.maxSlots|exists: true
+    selection_edition:
+        protoPayload.request.reservation.edition|exists: true
+    filter_authorized_max_slots:
+        protoPayload.request.reservation.autoscale.maxSlots|expand: '%authorized_reservation_max_slots_c63%'
+    filter_authorized_edition:
+        protoPayload.request.reservation.edition|expand: '%authorized_reservation_editions_c63%'
+    condition: selection_service and selection_event and ((selection_max_slots and not filter_authorized_max_slots) or (selection_edition and not filter_authorized_edition))
+falsepositives:
+    - Emergency reservation changes approved but not yet reflected in allowlists.
+level: medium
