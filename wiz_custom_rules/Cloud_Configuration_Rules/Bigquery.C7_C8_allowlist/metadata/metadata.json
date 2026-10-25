@@ -1,0 +1,31 @@
+{
+  "name": "Bigquery.C7_C8 - bigquery_authorized_access (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "HIGH",
+  "target_native_types": [
+    "bigquery#dataset"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC8"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "both"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC7"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO1"
+    }
+  ]
+}

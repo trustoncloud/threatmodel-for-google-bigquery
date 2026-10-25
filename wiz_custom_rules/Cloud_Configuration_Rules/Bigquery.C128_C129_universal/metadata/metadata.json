@@ -1,0 +1,31 @@
+{
+  "name": "Bigquery.C128_C129 - bigquery_gemini_enablement (universal)",
+  "enabled": true,
+  "function_as_control": true,
+  "severity": "INFORMATIONAL",
+  "target_native_types": [
+    "project#instance"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC129"
+    },
+    {
+      "key": "mode",
+      "value": "universal"
+    },
+    {
+      "key": "matcher",
+      "value": "both"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC128"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO34"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Bigquery.C76_C77 - bigquery_job_safety_config (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "LOW",
+  "target_native_types": [],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC77"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "terraform"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC76"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO8"
+    }
+  ]
+}

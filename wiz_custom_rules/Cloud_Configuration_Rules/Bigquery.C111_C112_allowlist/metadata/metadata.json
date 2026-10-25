@@ -1,0 +1,31 @@
+{
+  "name": "Bigquery.C111_C112 - bigquery_contact_domain_check (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "MEDIUM",
+  "target_native_types": [
+    "analyticshub#DataExchange"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC112"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "both"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC111"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO27"
+    }
+  ]
+}

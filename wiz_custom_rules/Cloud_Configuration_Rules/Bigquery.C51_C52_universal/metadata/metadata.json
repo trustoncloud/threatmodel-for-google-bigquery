@@ -1,0 +1,31 @@
+{
+  "name": "Bigquery.C51_C52 - bigquery_time_travel (universal)",
+  "enabled": true,
+  "function_as_control": true,
+  "severity": "LOW",
+  "target_native_types": [
+    "bigquery#dataset"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC52"
+    },
+    {
+      "key": "mode",
+      "value": "universal"
+    },
+    {
+      "key": "matcher",
+      "value": "both"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC51"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO18"
+    }
+  ]
+}

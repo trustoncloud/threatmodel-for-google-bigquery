@@ -1,0 +1,29 @@
+{
+  "name": "Bigquery.C13_C14 - bigquery_row_level_security (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "HIGH",
+  "target_native_types": [],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC14"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "terraform"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC13"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO6"
+    }
+  ]
+}
