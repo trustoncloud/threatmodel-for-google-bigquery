@@ -1,0 +1,29 @@
+{
+  "name": "Bigquery.C45_C46 - bigquery_data_policy_iam (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "MEDIUM",
+  "target_native_types": [],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC46"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "terraform"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC45"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO5"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Bigquery.C108_C109 - bigquery_subscription_ingress (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "LOW",
+  "target_native_types": [
+    "bigquery#dataset"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC109"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "both"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC108"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO30"
+    }
+  ]
+}

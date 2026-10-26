@@ -1,0 +1,31 @@
+{
+  "name": "Bigquery.C27_C29 - bigquery_cmek_encryption (universal)",
+  "enabled": true,
+  "function_as_control": true,
+  "severity": "MEDIUM",
+  "target_native_types": [
+    "bigquery#dataset"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC29"
+    },
+    {
+      "key": "mode",
+      "value": "universal"
+    },
+    {
+      "key": "matcher",
+      "value": "both"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC27"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO7"
+    }
+  ]
+}

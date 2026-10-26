@@ -1,0 +1,29 @@
+{
+  "name": "Bigquery.C58_C59 - bigquery_metadata_cache (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "MEDIUM",
+  "target_native_types": [],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC59"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "terraform"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC58"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO21"
+    }
+  ]
+}

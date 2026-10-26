@@ -1,0 +1,31 @@
+{
+  "name": "Bigquery.C39_C40 - bigquery_omni_governance (universal)",
+  "enabled": true,
+  "function_as_control": true,
+  "severity": "HIGH",
+  "target_native_types": [
+    "project#instance"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC40"
+    },
+    {
+      "key": "mode",
+      "value": "universal"
+    },
+    {
+      "key": "matcher",
+      "value": "both"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC39"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO14"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Bigquery.C33_C34 - bigquery_table_expiration (universal)",
+  "enabled": true,
+  "function_as_control": true,
+  "severity": "MEDIUM",
+  "target_native_types": [],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC34"
+    },
+    {
+      "key": "mode",
+      "value": "universal"
+    },
+    {
+      "key": "matcher",
+      "value": "terraform"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC33"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO12"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Bigquery.C96_C97 - bigquery_exchange_exposure (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "LOW",
+  "target_native_types": [
+    "analyticshub#DataExchange"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC97"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "both"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC96"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO8"
+    }
+  ]
+}

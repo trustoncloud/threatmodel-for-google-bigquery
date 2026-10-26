@@ -1,0 +1,29 @@
+{
+  "name": "Bigquery.C104_C105 - bigquery_subscription_governance (allowlist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "MEDIUM",
+  "target_native_types": [],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC105"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "matcher",
+      "value": "terraform"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC104"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO29"
+    }
+  ]
+}

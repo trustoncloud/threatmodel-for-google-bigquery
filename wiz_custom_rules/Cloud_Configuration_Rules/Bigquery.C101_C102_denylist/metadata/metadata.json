@@ -1,0 +1,29 @@
+{
+  "name": "Bigquery.C101_C102 - bigquery_listing_content_check (denylist)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "INFORMATIONAL",
+  "target_native_types": [],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC102"
+    },
+    {
+      "key": "mode",
+      "value": "denylist"
+    },
+    {
+      "key": "matcher",
+      "value": "terraform"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC101"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO27"
+    }
+  ]
+}

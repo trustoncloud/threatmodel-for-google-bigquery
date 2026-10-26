@@ -1,0 +1,29 @@
+{
+  "name": "Bigquery.C82_C83 - bigquery_table_availability (universal)",
+  "enabled": true,
+  "function_as_control": true,
+  "severity": "MEDIUM",
+  "target_native_types": [],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC83"
+    },
+    {
+      "key": "mode",
+      "value": "universal"
+    },
+    {
+      "key": "matcher",
+      "value": "terraform"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC82"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO8"
+    }
+  ]
+}
