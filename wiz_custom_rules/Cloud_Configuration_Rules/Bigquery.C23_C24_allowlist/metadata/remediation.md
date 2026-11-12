@@ -1,32 +1,40 @@
 # Remediation
 
-An external table or a declared job in the finding reads data from, or writes data to, a location outside the authorized list. Move the data flow to an authorized location, or, once the location is approved, add its URI prefix to `authorized_uri_prefixes` in the rule's configuration.
+An external table or a declared job in the finding reads data from, or writes data to, a location that is not approved. Move the data flow to an approved location, or, once the location is approved, add it to the rule's configuration: a Cloud Storage source to `authorized_source_gcs`, a Cloud Storage export destination to `authorized_destination_gcs`, and the host of a source outside Cloud Storage, such as Google Drive, to `authorized_source_hosts`. Sources and destinations are separate lists, so a bucket approved for reading is not approved for exports until it is in both. `gs://<bucket>` approves the whole bucket and `gs://<bucket>/<folder>/` only what is inside that folder; a bucket with a longer name or a folder next to the approved one is reported.
 
-1. External table: redefine it on an authorized source. Restate its column list, `WITH CONNECTION` clause and other options as they are now, and change only `uris`:
+A declared job is also reported when it reads or writes a BigQuery table that is not approved. Add a table a job may read to `authorized_source_tables_by_project_id` and a table a job may write to `authorized_destination_tables_by_project_id`, as `projects/<project-id>/datasets/<dataset>/tables/<table>` with the project ID. An entry that stops at the dataset approves every table and model in it.
+
+1. External table: redefine it on an approved source. Restate its column list, `WITH CONNECTION` clause and other options as they are now, and change only `uris`:
 
    ```sql
    CREATE OR REPLACE EXTERNAL TABLE `<project-id>.<dataset>.<table>`
    OPTIONS (
      format = '<format>',
-     uris = ['gs://<authorized-bucket>/<path>']
+     uris = ['gs://<approved-bucket>/<path>']
    );
    ```
 
    Run it in the BigQuery console or with `bq query --nouse_legacy_sql`. If the table is no longer needed, delete it instead with `bq rm -t <project-id>:<dataset>.<table>`.
 
-2. Load or extract job: a job cannot be changed once it has run. Cancel it if it is still running, and run future loads and extracts against authorized locations only:
+2. Load, extract, copy or query job: a job cannot be changed once it has run. Cancel it if it is still running, and run future jobs against approved locations and tables only:
 
    ```bash
    bq cancel <project-id>:<location>.<job-id>
    ```
 
-3. If an extract job already wrote files to an unauthorized bucket that you control, delete them:
+3. If an extract job already wrote files to a bucket that is not approved and that you control, delete them:
 
    ```bash
    gcloud storage rm gs://<bucket>/<object>
    ```
 
-Only tables and jobs declared in Terraform are checked; tables and jobs created with `bq`, the console or the API are not. Replace `<project-id>`, `<dataset>`, `<table>`, `<location>` and `<job-id>` with the resource the finding names, `<format>` with the table's current format, `<authorized-bucket>` and `<path>` with the new source, and `<bucket>` and `<object>` with the files the extract wrote.
+Replace `<project-id>`, `<dataset>`, `<table>`, `<location>` and `<job-id>` with the resource the finding names, `<format>` with the table's current format, `<approved-bucket>` and `<path>` with the new source, and `<bucket>` and `<object>` with the files the extract wrote.
+
+What the rule does not check:
+
+- Tables and jobs created with `bq`, the console or the API. Only tables and jobs declared in Terraform are read.
+- The tables a query job selects from. The SQL is not read; only the job's destination table is compared.
+- Datasets, models, connections and Analytics Hub listings. The rule covers external table sources and the Cloud Storage and table endpoints of load, extract, copy and query jobs.
 
 ## References
 

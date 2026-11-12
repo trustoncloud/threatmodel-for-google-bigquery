@@ -6,6 +6,11 @@ resource "google_bigquery_dataset" "example" {
 }
 ```
 
+Two things to know about the rule's scope:
+
+- A dataset with an `external_dataset_reference` block is skipped, because an external dataset has no time travel window.
+- `min_required_hours` is 48 by default, which is also the shortest window BigQuery accepts. At that value the rule reports nothing. Raise it in the rule's configuration to enforce a longer window.
+
 ## References
 
 - [google_bigquery_dataset (hashicorp/google 8.5.0)](https://registry.terraform.io/providers/hashicorp/google/8.5.0/docs/resources/bigquery_dataset)

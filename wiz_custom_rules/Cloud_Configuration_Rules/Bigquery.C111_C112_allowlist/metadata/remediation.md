@@ -17,7 +17,7 @@ For a listing, send the same request to the `projects.locations.dataExchanges.li
 - [Manage data exchanges](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-exchanges)
 - [Manage listings](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-listings)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 For a listing or data exchange, use an unauthorized email; it should be detected.

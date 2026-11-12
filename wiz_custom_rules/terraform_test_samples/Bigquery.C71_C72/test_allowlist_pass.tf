@@ -12,6 +12,10 @@ resource "google_bigquery_job" "trusted_udf" {
     }
 
     user_defined_function_resources {
+      resource_uri = "gs://partner-lib-bucket/v1/lib.js"
+    }
+
+    user_defined_function_resources {
       inline_code = "function tiny(x) { return x; }"
     }
   }

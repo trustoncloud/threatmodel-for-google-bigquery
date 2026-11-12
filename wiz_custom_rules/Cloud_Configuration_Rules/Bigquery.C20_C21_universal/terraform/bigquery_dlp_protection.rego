@@ -5,6 +5,8 @@ import data.generic.terraform as terraLib
 # --- Logic ---
 # Universal baseline: a BigQuery DLP trigger must carry inspection rules,
 # either a managed template reference or an inline inspect config.
+# The rule reads the scan's inspection rules only. It does not show that
+# data was redacted, or that every sensitive table has a trigger.
 
 inspect_job(trigger) := ij {
     ij := terraLib.getValueArrayOrObject(trigger.inspect_job)
@@ -38,7 +40,7 @@ WizPolicy[result] {
         "resourceName": terraLib.get_resource_name(trigger, name),
         "searchKey": sprintf("google_data_loss_prevention_job_trigger[%s].inspect_job", [name]),
         "issueType": "MissingAttribute",
-        "keyExpectedValue": "BigQuery DLP triggers must set inspect_template_name or an inline inspect_config",
+        "keyExpectedValue": "BigQuery DLP triggers must set inspect_template_name or an inline inspect_config (this checks the scan's inspection rules only, not that data was redacted or that every sensitive table is scanned)",
         "keyActualValue": "trigger scans BigQuery without inspection rules",
         "resourceTags": object.get(trigger, "labels", {}),
     }

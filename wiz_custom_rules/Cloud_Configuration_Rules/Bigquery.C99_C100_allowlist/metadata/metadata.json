@@ -3,7 +3,9 @@
   "enabled": false,
   "function_as_control": true,
   "severity": "LOW",
-  "target_native_types": [],
+  "target_native_types": [
+    "analyticshub#listing"
+  ],
   "tags": [
     {
       "key": "controlId",
@@ -15,7 +17,7 @@
     },
     {
       "key": "matcher",
-      "value": "terraform"
+      "value": "both"
     },
     {
       "key": "pairedControlId",

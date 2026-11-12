@@ -14,14 +14,14 @@ curl -X PATCH \
 
 The change also applies to every listing in the exchange. Discovery does not control access, which comes from IAM, so also remove `allUsers` and `allAuthenticatedUsers` from the exchange's IAM policy with the `projects.locations.dataExchanges.getIamPolicy` and `setIamPolicy` methods.
 
-If publishing this exchange is approved, add its resource name, `projects/<project-number>/locations/<location>/dataExchanges/<exchange-id>`, to `authorized_public_exchange_names` in the rule's configuration instead (the name carries the project number). Replace `<project-id>`, `<project-number>`, `<location>` and `<exchange-id>` with the project, location and ID of the data exchange named in the finding.
+If publishing this exchange is approved, add its resource name, `projects/<project-number>/locations/<location>/dataExchanges/<exchange-id>`, to `authorized_public_exchange_names` in the rule's configuration instead (the name carries the project number), and the same name with the project ID in place of the number to the Terraform matcher's list, `authorized_public_exchange_names_by_project_id`. An exchange is approved only when its project, location and ID all match an entry. Replace `<project-id>`, `<project-number>`, `<location>` and `<exchange-id>` with the project, location and ID of the data exchange named in the finding.
 
 ## References
 
 - [Manage data exchanges](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-exchanges)
 - [Configure BigQuery sharing roles](https://docs.cloud.google.com/bigquery/docs/analytics-hub-grant-roles)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 Create a data exchange with an unauthorized configuration; it should be detected.

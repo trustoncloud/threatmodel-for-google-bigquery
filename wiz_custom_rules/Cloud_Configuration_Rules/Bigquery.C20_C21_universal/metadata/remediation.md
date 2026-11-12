@@ -23,13 +23,18 @@ No GA `gcloud` or `bq` command edits a job trigger, so use the API method `proje
 
 Replace `<project-id>`, `<location>` and `<trigger-id>` with the trigger in the finding; a trigger created without a location is in `global`. The rule has no cloud scan and judges only triggers declared in Terraform, so review triggers created outside Terraform the same way.
 
+What the rule cannot show:
+
+- An inspection job reports the sensitive data it finds and changes nothing in the table. A trigger with the right inspection rules does not show that sensitive data was found, or that it was redacted. Check redaction (de-identification or masking) on the data itself.
+- Only the triggers that exist are read. A sensitive table that no trigger scans gets no finding, so compare your sensitive tables with the tables your triggers cover.
+
 ## References
 
 - [Using Sensitive Data Protection to scan BigQuery data](https://docs.cloud.google.com/bigquery/docs/scan-with-dlp)
 - [Creating Sensitive Data Protection inspection templates](https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-inspect)
 - [Method: projects.locations.jobTriggers.patch](https://docs.cloud.google.com/sensitive-data-protection/docs/reference/rest/v2/projects.locations.jobTriggers/patch)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 Add non-redacted sensitive data; it should be detected.

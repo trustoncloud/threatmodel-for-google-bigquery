@@ -1,6 +1,6 @@
 # Remediation
 
-The dataset in the finding is a linked dataset, created by subscribing to a BigQuery sharing listing, and its source dataset is not an authorized source. Either unsubscribe, or authorize the source.
+The dataset in the finding is a linked dataset, created by subscribing to a BigQuery sharing listing. Its source dataset is not an authorized source, or it sits in a project that is not approved to hold linked datasets. Either unsubscribe, or authorize the source or the project.
 
 To unsubscribe, delete the linked dataset. This does not delete the source dataset, and you can subscribe again later if the source is approved:
 
@@ -8,7 +8,7 @@ To unsubscribe, delete the linked dataset. This does not delete the source datas
 bq rm --recursive --dataset <project-id>:<dataset>
 ```
 
-If the subscription is approved, add a pattern for its source, such as `^projects/<source-project-number>/datasets/<source-dataset>$`, to `authorized_source_dataset_patterns` in the rule's configuration instead; the source project appears as its project number. Replace `<project-id>` and `<dataset>` with the project and linked dataset named in the finding, and `<source-project-number>` and `<source-dataset>` with the source dataset the finding reports.
+If the subscription is approved, add a pattern for its source, such as `^projects/<source-project-number>/datasets/<source-dataset>$`, to `authorized_source_dataset_patterns` in the rule's configuration instead; the source project appears as its project number. Keep the `^` and `$` anchors, so the pattern cannot match a longer name. If the project is approved to subscribe, add its project ID to `authorized_subscriber_project_ids`, here and in the copy of the configuration that the rule for subscriptions of this control carries. The dataset does not carry the listing or exchange it was subscribed through, so this check approves a linked dataset by its source dataset and its own project only; the checks of subscriptions, deployed and in Terraform, compare the exchange and listing. Replace `<project-id>` and `<dataset>` with the project and linked dataset named in the finding, and `<source-project-number>` and `<source-dataset>` with the source dataset the finding reports.
 
 ## References
 

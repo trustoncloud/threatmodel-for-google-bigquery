@@ -18,6 +18,11 @@ The dataset in the finding has no default table expiration, so its tables are ke
 
 Replace `<project-id>` and `<dataset>` with the dataset named in the finding, `<table>` with each of its tables, `<seconds>` with the retention your policy sets (at least 3600), and `<hours>` with the window.
 
+Two things to know about the rule's scope:
+
+- A linked dataset is skipped. It is a read-only view of data another project shares, and its expiration and time travel settings cannot be changed.
+- `max_time_travel_hours` is 168 by default, which is also the longest window BigQuery accepts. At that value the time travel check reports nothing. Lower it in the rule's configuration to enforce a shorter window.
+
 ## References
 
 - [bq update](https://docs.cloud.google.com/bigquery/docs/reference/bq-cli-reference#bq_update)

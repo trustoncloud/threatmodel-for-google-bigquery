@@ -1,4 +1,4 @@
-Turn on restricted export, including query results, on every listing:
+Turn on restricted export, including query results, on every listing that shares a BigQuery dataset:
 
 ```hcl
 resource "google_bigquery_analytics_hub_listing" "example" {
@@ -9,7 +9,7 @@ resource "google_bigquery_analytics_hub_listing" "example" {
 }
 ```
 
-Leave out `discovery_type`, which cannot be set on a restricted listing.
+Leave out `discovery_type`, which cannot be set on a restricted listing. A listing that shares only a Pub/Sub topic (`pubsub_topic` and no `bigquery_dataset`) is not checked, because restricted export applies to a shared dataset.
 
 ## References
 

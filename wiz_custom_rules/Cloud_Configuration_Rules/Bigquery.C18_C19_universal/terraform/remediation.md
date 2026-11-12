@@ -7,6 +7,11 @@ resource "google_bigquery_dataset" "example" {
 }
 ```
 
+Two things to know about the rule's scope:
+
+- A dataset with an `external_dataset_reference` block is skipped. Its tables live in the external source, so they have no expiration or time travel window to set.
+- `max_time_travel_hours` is 168 by default, which is also the longest window BigQuery accepts. At that value the time travel check reports nothing. Lower it in the rule's configuration to enforce a shorter window.
+
 ## References
 
 - [google_bigquery_dataset (hashicorp/google 8.5.0)](https://registry.terraform.io/providers/hashicorp/google/8.5.0/docs/resources/bigquery_dataset)

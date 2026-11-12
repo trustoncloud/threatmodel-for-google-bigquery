@@ -1,12 +1,12 @@
 # Remediation
 
-The table in the finding has no expiration time, so BigQuery keeps it indefinitely. Set an expiration that matches the table's retention requirement:
+The table in the finding has no expiration time, and its dataset gives it no default expiration, so BigQuery keeps it indefinitely. Set an expiration that matches the table's retention requirement:
 
 ```bash
 bq update --expiration=<seconds> <project-id>:<dataset>.<table>
 ```
 
-`<seconds>` counts from the time of the update; for example, `7776000` is 90 days. When the table expires, BigQuery deletes it along with all of its data. Only tables declared in Terraform are checked; tables created with `bq`, the console or the API are not. Replace `<project-id>`, `<dataset>` and `<table>` with the table the finding names.
+`<seconds>` counts from the time of the update; for example, `7776000` is 90 days. When the table expires, BigQuery deletes it along with all of its data. A table without its own expiration passes when its dataset, declared in the same Terraform source, sets a default table expiration, because a new table takes that default. Only tables declared in Terraform are checked; tables created with `bq`, the console or the API are not. Replace `<project-id>`, `<dataset>` and `<table>` with the table the finding names.
 
 ## References
 

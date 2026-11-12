@@ -1,6 +1,6 @@
 # Remediation
 
-The dataset in the finding grants public access, grants access to an identity outside the authorized domains, or lacks an access entry the rule requires. Fix its access list.
+The dataset in the finding grants public access, grants access to a member that is not approved, or lacks an access entry the rule requires. Fix its access list.
 
 1. Export the dataset, including its access list:
 
@@ -16,7 +16,14 @@ The dataset in the finding grants public access, grants access to an identity ou
    bq update --source dataset.json <project-id>:<dataset>
    ```
 
-If an identity's domain is approved, add the domain to `authorized_domains` in the rule's configuration instead. Replace `<project-id>` and `<dataset>` with the dataset named in the finding, and `<admin-group-email>` with the group the rule requires. The rule reads only the dataset's access list, so access inherited from roles on the project is not checked.
+If a member is approved, add it to `authorized_access` in the rule's configuration instead:
+
+- A user, a group or a domain-wide grant: its domain in `domains`, or its exact address in `emails`. `yourcompany.com` approves only that domain. Add `*.yourcompany.com` to approve its subdomains.
+- A service account: its exact address in `service_accounts`, or the project that owns it in `project_ids`. A domain never approves a service account.
+- A Google service agent, such as `service-<project-number>@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com`: its exact address in `service_accounts`.
+- Any other member, such as a `principal://` identity: the exact member in `members`.
+
+Replace `<project-id>` and `<dataset>` with the dataset named in the finding, and `<admin-group-email>` with the group the rule requires. The rule reads only the dataset's access list, so access inherited from roles on the project, folder or organization is not checked, and entries for authorized views, routines and datasets are not judged. A grant to a required entity that carries a condition holds only while the condition does, so it does not count as present: give each required entity its role with no condition.
 
 ## References
 

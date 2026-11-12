@@ -1,6 +1,6 @@
 # Remediation
 
-A principal outside the authorized set holds a role on the policy tag in the finding, which can give it access to the columns that the tag protects. Remove the grant, or, once the principal is approved, add it to `authorized_principals` in the rule's configuration, written as in IAM (for example `group:analysts@example.com`).
+A principal outside the authorized set holds a role on the policy tag or taxonomy in the finding, or holds the Fine-Grained Reader role on a project, folder or organization, which reaches every policy tag below it. Either can give it access to the columns that the tags protect. Remove the grant, or, once the principal is approved, add it to `authorized_principals` in the rule's configuration, written as in IAM (for example `group:analysts@example.com`).
 
 1. List the policy tag's grants:
 
@@ -17,12 +17,38 @@ A principal outside the authorized set holds a role on the policy tag in the fin
      --member=<member> --role=<role>
    ```
 
-Replace `<policy-tag>`, `<taxonomy>`, `<location>` and `<project-id>` with the policy tag in the finding and its taxonomy, location and project, and `<member>` and `<role>` with the grant it names, such as `user:jane@example.com` and `roles/datacatalog.categoryFineGrainedReader`. The rule has no cloud scan and judges only grants declared in Terraform, so use step 1 to review grants made outside Terraform.
+3. When the finding names a grant on the taxonomy, or the Fine-Grained Reader role on a project, folder or organization, remove it where it was granted:
+
+   ```bash
+   gcloud data-catalog taxonomies remove-iam-policy-binding <taxonomy> \
+     --location=<location> --project=<project-id> --member=<member> --role=<role>
+   ```
+
+   ```bash
+   gcloud projects remove-iam-policy-binding <project-id> \
+     --member=<member> --role=roles/datacatalog.categoryFineGrainedReader
+   ```
+
+   ```bash
+   gcloud resource-manager folders remove-iam-policy-binding <folder-id> \
+     --member=<member> --role=roles/datacatalog.categoryFineGrainedReader
+   ```
+
+   ```bash
+   gcloud organizations remove-iam-policy-binding <organization-id> \
+     --member=<member> --role=roles/datacatalog.categoryFineGrainedReader
+   ```
+
+Replace `<policy-tag>`, `<taxonomy>`, `<location>` and `<project-id>` with the policy tag in the finding and its taxonomy, location and project, `<folder-id>` and `<organization-id>` with the folder or organization the finding names, and `<member>` and `<role>` with the grant it names, such as `user:jane@example.com` and `roles/datacatalog.categoryFineGrainedReader`. The rule has no cloud scan and judges only grants declared in Terraform, so use step 1 to review grants made outside Terraform. On a project, folder or organization it matches only the predefined Fine-Grained Reader role: another role that carries the same permission, such as a custom role, is not read.
 
 ## References
 
 - [gcloud data-catalog taxonomies policy-tags get-iam-policy](https://docs.cloud.google.com/sdk/gcloud/reference/data-catalog/taxonomies/policy-tags/get-iam-policy)
 - [gcloud data-catalog taxonomies policy-tags remove-iam-policy-binding](https://docs.cloud.google.com/sdk/gcloud/reference/data-catalog/taxonomies/policy-tags/remove-iam-policy-binding)
+- [gcloud data-catalog taxonomies remove-iam-policy-binding](https://docs.cloud.google.com/sdk/gcloud/reference/data-catalog/taxonomies/remove-iam-policy-binding)
+- [gcloud projects remove-iam-policy-binding](https://docs.cloud.google.com/sdk/gcloud/reference/projects/remove-iam-policy-binding)
+- [gcloud resource-manager folders remove-iam-policy-binding](https://docs.cloud.google.com/sdk/gcloud/reference/resource-manager/folders/remove-iam-policy-binding)
+- [gcloud organizations remove-iam-policy-binding](https://docs.cloud.google.com/sdk/gcloud/reference/organizations/remove-iam-policy-binding)
 - [Restrict access with column-level access control](https://docs.cloud.google.com/bigquery/docs/column-level-security)
 - [Introduction to column-level access control](https://docs.cloud.google.com/bigquery/docs/column-level-security-intro)
 

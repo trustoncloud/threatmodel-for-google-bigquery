@@ -1,8 +1,8 @@
 # Remediation
 
-The reservation or reservation assignment in the finding uses a configuration that is not authorized: an unauthorized edition, idle slot sharing left on, more baseline slots than the ceiling, or an assignment with an unauthorized job type or assignee. Correct it, or, once the configuration is approved, update `authorized_editions`, `required_ignore_idle_slots`, `max_slot_capacity`, `authorized_job_types` or `authorized_assignees` in the rule's configuration.
+The reservation or reservation assignment in the finding uses a configuration that is not authorized: an unauthorized edition, idle slot sharing left on, more slots than the ceiling, or an assignment with an unauthorized job type, assignee or reservation. Correct it, or, once the configuration is approved, update `authorized_editions`, `required_ignore_idle_slots`, `max_slot_capacity`, `authorized_job_types`, `authorized_assignees` or `authorized_reservation_names_by_project_id` in the rule's configuration.
 
-1. Keep the reservation to its own slots and its baseline within the ceiling:
+1. Keep the reservation to its own slots and its capacity within the ceiling. The ceiling covers what the reservation can reach: its baseline slots plus the most slots autoscaling can add. Lower the baseline, the autoscaling maximum, or both:
 
    ```bash
    bq update --project_id=<admin-project-id> --location=<location> \
@@ -19,7 +19,7 @@ The reservation or reservation assignment in the finding uses a configuration th
    bq rm --project_id=<admin-project-id> --location=<location> --reservation <reservation>
    ```
 
-3. An assignment's job type and assignee are set when it is created. Delete an unauthorized assignment and, if needed, assign an authorized project, folder or organization:
+3. An assignment's job type, assignee and reservation are set when it is created. Delete an unauthorized assignment and, if needed, assign an authorized project, folder or organization to a reservation that is declared in the same Terraform source or listed in `authorized_reservation_names_by_project_id`:
 
    ```bash
    bq rm --project_id=<admin-project-id> --location=<location> \

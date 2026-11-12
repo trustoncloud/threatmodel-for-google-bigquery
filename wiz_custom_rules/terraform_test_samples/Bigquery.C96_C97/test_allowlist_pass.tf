@@ -8,8 +8,9 @@ resource "google_bigquery_analytics_hub_data_exchange" "internal" {
   discovery_type   = "DISCOVERY_TYPE_PRIVATE"
 }
 
-# Published exchange explicitly allowlisted
+# Published exchange explicitly allowlisted: project, location and ID match
 resource "google_bigquery_analytics_hub_data_exchange" "official" {
+  project          = "my-project"
   data_exchange_id = "official_public_dataset"
   display_name     = "Official Public Dataset"
   location         = "us"

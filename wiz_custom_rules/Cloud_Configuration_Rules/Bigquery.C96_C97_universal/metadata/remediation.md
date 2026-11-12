@@ -17,7 +17,7 @@ The change also applies to every listing in the exchange. Discovery does not con
 - [Manage data exchanges](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-exchanges)
 - [Configure BigQuery sharing roles](https://docs.cloud.google.com/bigquery/docs/analytics-hub-grant-roles)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 Create a data exchange with an unauthorized configuration; it should be detected.

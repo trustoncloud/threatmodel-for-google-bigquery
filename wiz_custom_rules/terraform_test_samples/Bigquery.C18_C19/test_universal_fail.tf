@@ -7,7 +7,9 @@ resource "google_bigquery_dataset" "forever" {
 }
 
 # Time travel beyond the maximum: 1 finding
-# (provider accepts 48-168, so an out-of-policy value can still appear in IaC)
+# BigQuery accepts 48 to 168 hours and the rule's default maximum is 168, so
+# no value the platform accepts is above it. 720 proves the comparison only:
+# an apply with this value is rejected.
 resource "google_bigquery_dataset" "long_travel" {
   dataset_id                  = "long_travel_data"
   location                    = "US"

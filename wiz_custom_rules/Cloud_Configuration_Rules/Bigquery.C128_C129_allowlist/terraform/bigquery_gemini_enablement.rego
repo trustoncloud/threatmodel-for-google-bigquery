@@ -13,8 +13,9 @@ target_service := "cloudaicompanion.googleapis.com"
 
 # --- Logic ---
 # Finding: Gemini API enabled on a project outside the authorized set.
-# An unset project attribute inherits the provider default and cannot be
-# attributed, so it fails secure.
+# The project ID is compared exactly. A declaration with no project, or with
+# a project the source does not state, cannot be tied to an approved project,
+# so it is reported.
 WizPolicy[result] {
     document := input.document[i]
     svc := document.resource.google_project_service[name]
@@ -29,16 +30,28 @@ WizPolicy[result] {
         "searchKey": sprintf("google_project_service[%s].service", [name]),
         "issueType": "IncorrectValue",
         "keyExpectedValue": sprintf("Gemini may only be enabled on authorized projects: %v", [authorized_gemini_projects]),
-        "keyActualValue": sprintf("cloudaicompanion.googleapis.com enabled on project '%v'", [project]),
+        "keyActualValue": sprintf("cloudaicompanion.googleapis.com enabled on %s", [project_description(project)]),
         "resourceTags": object.get(svc, "labels", {}),
     }
 }
 
 project_authorized(project) {
+    not tocm_tf_unresolved(project)
     authorized_gemini_projects[project]
 }
 
-project_authorized(project) {
-    allowed := authorized_gemini_projects[_]
-    contains(project, allowed)
+project_description(project) := "the provider default project, which the source does not state" {
+    project == ""
+} else := sprintf("project '%v', which is not known until apply", [project]) {
+    tocm_tf_unresolved(project)
+} else := sprintf("project '%v'", [project])
+
+# --- Matching helpers ---
+# --- toc-match begin: tf v1 ---
+# A Terraform value that is still an unresolved reference ("${...}"). Treat
+# it as unknown: never compare it with an allowlist as a string.
+tocm_tf_unresolved(v) {
+    is_string(v)
+    contains(v, "${")
 }
+# --- toc-match end: tf v1 ---

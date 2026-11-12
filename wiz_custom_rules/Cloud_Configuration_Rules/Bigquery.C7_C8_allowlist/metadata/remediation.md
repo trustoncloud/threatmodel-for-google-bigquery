@@ -16,7 +16,7 @@ The dataset in the finding grants access to an entity that is not authorized: a 
    bq update --source dataset.json <project-id>:<dataset>
    ```
 
-If the entity is approved, add it to `authorized_entities` in the rule's configuration instead, written as the finding lists it (for example `group:<email>` or `view:<table-id>`). Replace `<project-id>` and `<dataset>` with the dataset named in the finding. The rule reads only the dataset's access list: IAM policies on individual tables and views, and roles granted on the project, are not checked.
+If the entity is approved, add it to `authorized_entities` in the rule's configuration instead, written as the finding lists it (for example `group:<email>` or `view:<project-id>.<dataset>.<table>`; a service account appears as `user:<email>`). An authorized view, routine or dataset is matched on its project, dataset and ID together, so the same ID in another project or dataset is a different entity. Replace `<project-id>` and `<dataset>` with the dataset named in the finding. The cloud rule reads only the dataset's access list: IAM policies on individual tables and views are not checked. The Terraform rule also checks table and view IAM grants declared in the scanned files. Roles granted on the project, folder or organization are inherited by every dataset and table. The rule does not read them, so a principal can reach a dataset through such a role without a finding here. The `projectOwners`, `projectWriters` and `projectReaders` entries give access to whoever holds those project roles, which the rule does not check either.
 
 ## References
 

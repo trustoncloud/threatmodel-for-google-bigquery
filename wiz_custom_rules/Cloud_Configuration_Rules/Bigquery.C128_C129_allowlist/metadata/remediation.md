@@ -18,6 +18,8 @@ The Gemini for Google Cloud API (`cloudaicompanion.googleapis.com`), which Gemin
 
 Replace `<project-id>` with the project in the finding.
 
+A project whose list of enabled services was not collected is skipped: without that list there is no evidence that the API is on or off, so the rule reports nothing for it.
+
 ## References
 
 - [gcloud services disable](https://docs.cloud.google.com/sdk/gcloud/reference/services/disable)

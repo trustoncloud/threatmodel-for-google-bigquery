@@ -11,6 +11,8 @@ authorized_templates := {
 }
 
 # --- Helpers ---
+# The rule reads the scan's inspection rules only. It does not show that
+# data was redacted, or that every sensitive table has a trigger.
 inspect_job(trigger) := ij {
     ij := terraLib.getValueArrayOrObject(trigger.inspect_job)
 }
@@ -37,7 +39,7 @@ WizPolicy[result] {
         "resourceName": terraLib.get_resource_name(trigger, name),
         "searchKey": sprintf("google_data_loss_prevention_job_trigger[%s].inspect_job.inspect_template_name", [name]),
         "issueType": "IncorrectValue",
-        "keyExpectedValue": sprintf("BigQuery DLP triggers must use an authorized template: %v", [authorized_templates]),
+        "keyExpectedValue": sprintf("BigQuery DLP triggers must use an authorized template: %v (this checks the scan's inspection rules only, not that data was redacted or that every sensitive table is scanned)", [authorized_templates]),
         "keyActualValue": sprintf("inspect_template_name is '%v'", [template]),
         "resourceTags": object.get(trigger, "labels", {}),
     }

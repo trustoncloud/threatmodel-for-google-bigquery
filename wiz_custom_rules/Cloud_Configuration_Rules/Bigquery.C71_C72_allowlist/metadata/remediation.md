@@ -1,6 +1,6 @@
 # Remediation
 
-A declared query job loads user-defined function (UDF) code from a Cloud Storage location that is not trusted. Load UDF code only from a trusted bucket, or, once the bucket is approved, add its URI prefix to `authorized_udf_uri_prefixes` in the rule's configuration.
+A declared query job loads user-defined function (UDF) code from a Cloud Storage location that is not trusted. Load UDF code only from a trusted bucket, or, once the bucket is approved, add it to `authorized_udf_locations` in the rule's configuration. `gs://<bucket>` trusts the whole bucket and `gs://<bucket>/<folder>/` only what is inside that folder; a bucket with a longer name or a folder next to the trusted one is reported.
 
 1. A job cannot be changed once it has run. Cancel it if it is still running:
 
@@ -15,7 +15,7 @@ A declared query job loads user-defined function (UDF) code from a Cloud Storage
    bq query --use_legacy_sql=true --udf_resource=gs://<trusted-bucket>/<file> '<query>'
    ```
 
-Only the job's UDF resources are checked: inline UDF code, JavaScript libraries named in a GoogleSQL function's `library` option, and jobs run outside Terraform are not. Replace `<project-id>`, `<location>` and `<job-id>` with the job the finding names, `<untrusted-bucket>` and `<file>` with the UDF source it lists, `<trusted-bucket>` with an authorized bucket, and `<query>` with the query text.
+Only the job's UDF resources are checked: inline UDF code, JavaScript libraries named in a GoogleSQL function's `library` option, and jobs run outside Terraform are not. Replace `<project-id>`, `<location>` and `<job-id>` with the job the finding names, `<untrusted-bucket>` and `<file>` with the UDF source it lists, `<trusted-bucket>` with a trusted bucket, and `<query>` with the query text.
 
 ## References
 
