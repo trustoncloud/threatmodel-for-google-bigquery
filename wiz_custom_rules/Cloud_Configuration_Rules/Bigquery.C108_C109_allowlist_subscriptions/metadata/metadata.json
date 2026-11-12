@@ -1,0 +1,35 @@
+{
+  "name": "Bigquery.C108_C109 - bigquery_subscription_ingress (allowlist, subscriptions)",
+  "enabled": false,
+  "function_as_control": true,
+  "severity": "LOW",
+  "target_native_types": [
+    "analyticshub#subscription"
+  ],
+  "tags": [
+    {
+      "key": "controlId",
+      "value": "BigqueryC109"
+    },
+    {
+      "key": "mode",
+      "value": "allowlist"
+    },
+    {
+      "key": "resourceType",
+      "value": "subscriptions"
+    },
+    {
+      "key": "matcher",
+      "value": "cloud"
+    },
+    {
+      "key": "pairedControlId",
+      "value": "BigqueryC108"
+    },
+    {
+      "key": "objective",
+      "value": "BigqueryCO30"
+    }
+  ]
+}

@@ -7,7 +7,7 @@ bq query --nouse_legacy_sql \
   'ALTER TABLE `<project-id>.<dataset>.<table>` SET OPTIONS (require_partition_filter = true)'
 ```
 
-Queries on the table that do not filter on the partitioning column then fail with an error, so update any that rely on a full scan. Only tables declared in Terraform are checked; tables created with `bq`, the console or the API are not. Replace `<project-id>`, `<dataset>` and `<table>` with the table the finding names.
+Queries on the table that do not filter on the partitioning column then fail with an error, so update any that rely on a full scan. A Hive-partitioned external table is also checked: its requirement is the `require_partition_filter` setting of its Hive partitioning options, which is set where the table is declared. Only tables declared in Terraform are checked; tables created with `bq`, the console or the API are not. Replace `<project-id>`, `<dataset>` and `<table>` with the table the finding names.
 
 ## References
 

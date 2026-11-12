@@ -4,7 +4,9 @@ import data.generic.terraform as terraLib
 
 # --- Configuration ---
 # Keep in sync with the cloud matcher: the backup label must exist and carry
-# an authorized schedule value.
+# an authorized schedule value. The label records the intended schedule only:
+# it does not show that a backup exists, ran or can be restored, and tables
+# and models are not checked.
 backup_label_key := "backup_policy"
 
 authorized_backup_schedules := {
@@ -28,7 +30,7 @@ WizPolicy[result] {
         "resourceName": terraLib.get_resource_name(ds, name),
         "searchKey": sprintf("google_bigquery_dataset[%s].labels", [name]),
         "issueType": "MissingAttribute",
-        "keyExpectedValue": sprintf("labels must include '%v' with one of: %v", [backup_label_key, authorized_backup_schedules]),
+        "keyExpectedValue": sprintf("labels must include '%v' with one of: %v (the label records the intended backup schedule only; it does not show that a backup exists or can be restored)", [backup_label_key, authorized_backup_schedules]),
         "keyActualValue": sprintf("label '%v' is not set", [backup_label_key]),
         "resourceTags": object.get(ds, "labels", {}),
     }
@@ -47,7 +49,7 @@ WizPolicy[result] {
         "resourceName": terraLib.get_resource_name(ds, name),
         "searchKey": sprintf("google_bigquery_dataset[%s].labels.%s", [name, backup_label_key]),
         "issueType": "IncorrectValue",
-        "keyExpectedValue": sprintf("label '%v' must be one of: %v", [backup_label_key, authorized_backup_schedules]),
+        "keyExpectedValue": sprintf("label '%v' must be one of: %v (the label records the intended backup schedule only; it does not show that a backup exists or can be restored)", [backup_label_key, authorized_backup_schedules]),
         "keyActualValue": sprintf("label '%v' is '%v'", [backup_label_key, val]),
         "resourceTags": object.get(ds, "labels", {}),
     }

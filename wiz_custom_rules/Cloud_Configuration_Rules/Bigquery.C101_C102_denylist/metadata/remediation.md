@@ -10,13 +10,13 @@ curl -X PATCH \
   "https://analyticshub.googleapis.com/v1/projects/<project-id>/locations/<location>/dataExchanges/<exchange-id>/listings/<listing-id>?updateMask=description"
 ```
 
-For the other fields, use `displayName` or `documentation` in both the body and the update mask. If a match is approved content, such as a public support address, narrow or remove that pattern in `sensitive_patterns` in the rule's configuration instead. The rule reads Terraform plans only, so a listing edited outside Terraform is not reported. Replace `<project-id>`, `<location>`, `<exchange-id>` and `<listing-id>` with the listing named in the finding and its data exchange, and `<cleaned-text>` with the field's text without the sensitive value.
+For the other fields, use `displayName` or `documentation` in both the body and the update mask. If a match is approved content, such as a public support address, narrow or remove that pattern in `sensitive_patterns` in the rule's configuration instead. Deployed listings are read where they are scanned; a listing in a multi-region location may not be among them, and the Terraform check covers it. Replace `<project-id>`, `<location>`, `<exchange-id>` and `<listing-id>` with the listing named in the finding and its data exchange, and `<cleaned-text>` with the field's text without the sensitive value.
 
 ## References
 
 - [Manage listings](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-listings)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 Add sensitive data to a field of a listing; it should be detected.

@@ -9,6 +9,7 @@ resource "google_bigquery_row_access_policy" "region_filter" {
   grantees = [
     "user:analyst@yourcompany.com",
     "group:regional-team@subsidiary.com",
-    "serviceAccount:reporting@example-project.iam.gserviceaccount.com"
+    "serviceAccount:reporting@my-project.iam.gserviceaccount.com",
+    "domain:subsidiary.com"
   ]
 }

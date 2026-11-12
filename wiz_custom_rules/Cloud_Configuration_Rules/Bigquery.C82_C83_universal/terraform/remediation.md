@@ -10,7 +10,19 @@ resource "google_bigquery_table" "example" {
 }
 ```
 
-The same flag inside `time_partitioning` also passes, but the provider deprecates it in favor of the top-level argument. Hive-partitioned external tables are not judged.
+The same flag inside `time_partitioning` also passes, but the provider deprecates it in favor of the top-level argument.
+
+A Hive-partitioned external table has its own flag inside `hive_partitioning_options`. Only that flag covers its partitions, so the top-level argument does not satisfy the rule for such a table:
+
+```hcl
+resource "google_bigquery_table" "example" {
+  external_data_configuration {
+    hive_partitioning_options {
+      require_partition_filter = true
+    }
+  }
+}
+```
 
 ## References
 

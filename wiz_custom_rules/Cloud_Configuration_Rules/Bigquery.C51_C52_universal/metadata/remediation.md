@@ -15,6 +15,11 @@ SET OPTIONS (max_time_travel_hours = <hours>);
 
 Run it in the BigQuery console or with `bq query --nouse_legacy_sql`. BigQuery accepts 48 to 168 hours in multiples of 24, and a dataset that does not set the window gets 168. Replace `<project-id>` and `<dataset>` with the dataset named in the finding, and `<hours>` with the window.
 
+Two things to know about the rule's scope:
+
+- A linked dataset is skipped. It is a read-only view of data another project shares, and its time travel window cannot be changed.
+- `min_required_hours` is 48 by default, which is also the shortest window BigQuery accepts. At that value the rule reports nothing. Raise it in the rule's configuration to enforce a longer window.
+
 ## References
 
 - [bq update](https://docs.cloud.google.com/bigquery/docs/reference/bq-cli-reference#bq_update)

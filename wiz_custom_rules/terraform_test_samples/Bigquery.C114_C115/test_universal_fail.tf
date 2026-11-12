@@ -29,3 +29,24 @@ resource "google_bigquery_analytics_hub_listing" "partial_export" {
     dataset = "projects/example-project/datasets/analytics_data"
   }
 }
+
+# A dataset source built by a dynamic block is still a dataset listing: 1 finding
+variable "shared_datasets" {
+  type = list(string)
+}
+
+resource "google_bigquery_analytics_hub_listing" "generated_source" {
+  data_exchange_id = "internal_analytics"
+  listing_id       = "generated_listing"
+  display_name     = "Generated Listing"
+  location         = "us"
+  description      = "Source set by a dynamic block"
+
+  dynamic "bigquery_dataset" {
+    for_each = var.shared_datasets
+
+    content {
+      dataset = bigquery_dataset.value
+    }
+  }
+}

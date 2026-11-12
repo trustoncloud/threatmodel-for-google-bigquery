@@ -3,17 +3,26 @@ package wiz
 import data.generic.terraform as terraLib
 
 # --- Logic ---
-# Universal baseline: every listing must enable restricted export, including
-# the query-result restriction.
+# Universal baseline: every listing that shares a BigQuery dataset must
+# enable restricted export, including the query-result restriction.
 
 export_config(l) := cfg {
     cfg := terraLib.getValueArrayOrObject(l.restricted_export_config)
+}
+
+# Restricted export governs a shared dataset. A listing that shares a Pub/Sub
+# topic and no dataset has nothing for it to restrict. A listing with neither
+# block written out (a source built by a dynamic block) is held to the rule.
+shares_topic_only(l) {
+    l.pubsub_topic
+    not l.bigquery_dataset
 }
 
 # Finding: restricted export disabled or missing.
 WizPolicy[result] {
     document := input.document[i]
     l := document.resource.google_bigquery_analytics_hub_listing[name]
+    not shares_topic_only(l)
     not export_enabled(l)
 
     result := {
@@ -32,6 +41,7 @@ WizPolicy[result] {
 WizPolicy[result] {
     document := input.document[i]
     l := document.resource.google_bigquery_analytics_hub_listing[name]
+    not shares_topic_only(l)
     export_enabled(l)
     cfg := export_config(l)
     object.get(cfg, "restrict_query_result", false) != true

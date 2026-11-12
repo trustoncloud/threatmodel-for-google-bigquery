@@ -6,6 +6,11 @@ resource "google_bigquery_dataset" "example" {
 }
 ```
 
+What the rule cannot show:
+
+- The rule reads only the label, which records the schedule the dataset is meant to be backed up on. A label does not show that a backup exists, that it ran on schedule, or that it can be restored. Set it only once the dataset is covered by that backup.
+- Tables and models are not checked. The label sits on the dataset, so a table or model without a snapshot or export gets no finding.
+
 ## References
 
 - [google_bigquery_dataset (hashicorp/google 8.5.0)](https://registry.terraform.io/providers/hashicorp/google/8.5.0/docs/resources/bigquery_dataset)

@@ -1,6 +1,6 @@
 # Remediation
 
-The row access policy in the finding grants rows of its table to a principal outside the authorized domains, or to `allUsers` or `allAuthenticatedUsers`. Recreate the policy with authorized grantees only, or, once the domain is approved, add it to `authorized_domains` in the rule's configuration.
+The row access policy in the finding grants rows of its table to a grantee that is not approved, or to `allUsers` or `allAuthenticatedUsers`. Recreate the policy with approved grantees only, or, once the grantee is approved, add it to `authorized_grantees` in the rule's configuration: a user, group or domain-wide grant by its domain (`domains`) or exact address (`emails`), and a service account by its exact address (`service_accounts`) or the project that owns it (`project_ids`). A domain never approves a service account, and `yourcompany.com` does not approve its subdomains (add `*.yourcompany.com` for those).
 
 1. List the table's row access policies with their filters and grantees:
 
@@ -13,7 +13,7 @@ The row access policy in the finding grants rows of its table to a principal out
    ```sql
    CREATE OR REPLACE ROW ACCESS POLICY <policy>
    ON `<project-id>.<dataset>.<table>`
-   GRANT TO ('group:<group>@<authorized-domain>')
+   GRANT TO ('group:<group>@<approved-domain>')
    FILTER USING (<filter-expression>);
    ```
 
@@ -27,7 +27,7 @@ DROP ROW ACCESS POLICY <policy> ON `<project-id>.<dataset>.<table>`;
 
 BigQuery does not drop a table's last policy this way. `DROP ALL ROW ACCESS POLICIES` does, and then anyone who can read the table sees every row.
 
-Replace `<project-id>`, `<dataset>`, `<table>` and `<policy>` with the table and policy in the finding, `<filter-expression>` with the filter that step 1 lists for it, and the grantee with an authorized principal. The rule has no cloud scan and judges only policies declared in Terraform, so use step 1 to review policies created outside Terraform.
+Replace `<project-id>`, `<dataset>`, `<table>` and `<policy>` with the table and policy in the finding, `<filter-expression>` with the filter that step 1 lists for it, and the grantee with an approved one. The rule has no cloud scan and judges only policies declared in Terraform, so use step 1 to review policies created outside Terraform.
 
 ## References
 

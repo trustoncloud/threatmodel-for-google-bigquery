@@ -9,10 +9,19 @@ require_table_expiration := true
 # 2. Max Time Travel Allowed (Hours)
 # Security Goal: Secure Deletion. Ensures deleted data is purged within a fixed window.
 # BigQuery default is 168 hours (7 days). Set to -1 to disable.
+# BigQuery accepts 48 to 168 hours, so at 168 this check reports nothing:
+# lower the value to enforce a shorter window.
 max_time_travel_hours := 168
 
 # --- Logic ---
 default result := "pass"
+
+# A linked dataset is a read-only view of data another project shares, and
+# names the dataset it is linked from in linkedDatasetSource. Its expiration
+# and time travel settings cannot be changed, so it is skipped.
+is_linked_dataset {
+    input.linkedDatasetSource
+}
 
 # Helper: Get Expiration (unset arrives as "0")
 get_expiration = val {
@@ -48,6 +57,8 @@ fail_excessive_time_travel {
 # --- Aggregation ---
 result := "skip" {
     not input.datasetReference
+} else := "skip" {
+    is_linked_dataset
 } else := "fail" {
     fail_missing_expiration
 } else := "fail" {

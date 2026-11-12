@@ -16,6 +16,11 @@ resource "google_data_loss_prevention_job_trigger" "example" {
 
 The template name is compared exactly as written, so use the same form as the list. An inline `inspect_config` without an authorized template is reported.
 
+What the rule cannot show:
+
+- An inspection job reports the sensitive data it finds and changes nothing in the table. A trigger with the right inspection rules does not show that sensitive data was found, or that it was redacted.
+- Only the triggers declared in the scanned files are read. A sensitive table that no trigger scans gets no finding.
+
 ## References
 
 - [google_data_loss_prevention_job_trigger (hashicorp/google 8.5.0)](https://registry.terraform.io/providers/hashicorp/google/8.5.0/docs/resources/data_loss_prevention_job_trigger)

@@ -2,38 +2,34 @@ package wiz
 
 default result := "pass"
 
-# Routed types: datasets carry defaultEncryptionConfiguration; tables and
-# models carry encryptionConfiguration. The config block is absent when the
-# resource uses Google-managed encryption.
-is_supported_resource {
-    input.datasetReference
-}
-is_supported_resource {
-    input.tableReference
-}
-is_supported_resource {
-    input.modelReference
-}
-
-# 1. Check for CMEK Presence
+# The encryption block is absent when the dataset uses Google-managed
+# encryption.
 has_cmek {
     input.defaultEncryptionConfiguration.kmsKeyName != ""
 }
 
-has_cmek {
-    input.encryptionConfiguration.kmsKeyName != ""
+# A linked dataset is a read-only view of data another project shares, and
+# names the dataset it is linked from in linkedDatasetSource. Its data is
+# encrypted where it is stored, so it has no default key to set and is
+# skipped.
+is_linked_dataset {
+    input.linkedDatasetSource
 }
 
-# 2. Aggregation
+# --- Aggregation ---
 result := "skip" {
-    not is_supported_resource
+    not input.datasetReference
+} else := "skip" {
+    is_linked_dataset
 } else := "fail" {
     not has_cmek
 }
 
 # --- Metadata ---
-currentConfiguration := "Resource is using Google-Managed Encryption (No CMEK)" {
+currentConfiguration := "Linked dataset: read-only, with no default key to set" {
+    is_linked_dataset
+} else := "Dataset has no default CMEK, so new tables use Google-managed encryption" {
     result == "fail"
-} else := "Resource is encrypted with CMEK"
+} else := "Dataset has a default CMEK"
 
-expectedConfiguration := "BigQuery resources must be encrypted with a Customer-Managed Encryption Key (CMEK)."
+expectedConfiguration := "The dataset must have a default Customer-Managed Encryption Key (CMEK). Only the dataset default is checked: a table or model created before the default was set keeps its own key."

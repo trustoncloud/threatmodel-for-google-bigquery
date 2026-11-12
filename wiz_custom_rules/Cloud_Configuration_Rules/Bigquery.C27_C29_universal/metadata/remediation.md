@@ -29,6 +29,10 @@ The dataset in the finding has no default customer-managed encryption key (CMEK)
 
 Replace `<project-id>` and `<dataset>` with the dataset named in the finding, `<table>` with each of its tables, `<project-number>` with that project's number, and the key path with your key. For a table reported by the Terraform matcher, step 3 is enough.
 
+The cloud rule reads datasets only. It does not see the key of a table or model that already exists, and a table created before the default was set keeps its own key, so run step 3 for every existing table.
+
+A linked dataset is skipped. It is a read-only view of data another project shares: the data is encrypted where it is stored, so the linked dataset has no default key to set.
+
 ## References
 
 - [gcloud kms keys add-iam-policy-binding](https://docs.cloud.google.com/sdk/gcloud/reference/kms/keys/add-iam-policy-binding)

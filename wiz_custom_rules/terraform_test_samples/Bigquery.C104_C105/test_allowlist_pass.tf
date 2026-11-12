@@ -14,7 +14,7 @@ resource "google_bigquery_analytics_hub_listing_iam_binding" "listing_subscriber
   role             = "roles/analyticshub.subscriber"
   members = [
     "user:analyst@yourcompany.com",
-    "serviceAccount:etl@partner-domain.com"
+    "serviceAccount:etl@my-project.iam.gserviceaccount.com"
   ]
 }
 
@@ -24,4 +24,23 @@ resource "google_bigquery_analytics_hub_data_exchange_iam_member" "viewer" {
   location         = "us"
   role             = "roles/analyticshub.viewer"
   member           = "user:guest@external.com"
+}
+
+# A policy that takes its bindings from a data source in this file, with
+# approved subscribers only
+data "google_iam_policy" "subscribers" {
+  binding {
+    role = "roles/analyticshub.subscriber"
+    members = [
+      "group:data-consumers@yourcompany.com",
+      "user:analyst@partner-domain.com",
+    ]
+  }
+}
+
+resource "google_bigquery_analytics_hub_listing_iam_policy" "listing_policy" {
+  data_exchange_id = "internal_analytics"
+  listing_id       = "governed_listing"
+  location         = "us"
+  policy_data      = data.google_iam_policy.subscribers.policy_data
 }

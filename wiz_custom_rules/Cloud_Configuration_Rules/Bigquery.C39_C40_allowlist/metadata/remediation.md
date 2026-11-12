@@ -9,7 +9,7 @@ gcloud resource-manager org-policies enable-enforce bigquery.disableBQOmniAzure 
   --organization=<organization-id>
 ```
 
-A project is judged on the policy in effect on it, so a project finding under an organization that enforces both means the project, or a folder above it, turns the ban off: run the same commands with `--project=<project-id>` in place of `--organization`. An organization cannot be exempted. Once a project is approved for Omni, add its project ID to `authorized_omni_projects` in the rule's configuration instead; it can then lift the ban for itself, here for AWS (use `bigquery.disableBQOmniAzure` for Azure):
+A project is judged on the policy in effect on it, so a project finding under an organization that enforces both means the project, or a folder above it, turns the ban off: run the same commands with `--project=<project-id>` in place of `--organization`. An organization cannot be exempted. Once a project is approved for Omni, add its project ID to `authorized_omni_projects` in the rule's configuration instead (the cloud and Terraform matchers use the same list); it can then lift the ban for itself, here for AWS (use `bigquery.disableBQOmniAzure` for Azure):
 
 ```bash
 gcloud resource-manager org-policies disable-enforce bigquery.disableBQOmniAWS \

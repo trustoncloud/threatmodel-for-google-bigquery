@@ -22,14 +22,14 @@ The listing in the finding is publicly discoverable, allows data export without 
      "https://analyticshub.googleapis.com/v1/projects/<project-id>/locations/<location>/dataExchanges/<exchange-id>/listings/<listing-id>?updateMask=restrictedExportConfig,description,documentation"
    ```
 
-If the listing is approved to allow export, add its listing ID to `authorized_exportable_listing_ids` in the rule's configuration and leave `restrictedExportConfig` out of step 2. The rule reads Terraform plans only, so a listing changed outside Terraform is not reported. Replace `<project-id>`, `<location>`, `<exchange-id>` and `<listing-id>` with the listing named in the finding and its data exchange, and `<description>` and `<documentation>` with text for subscribers.
+If the listing is approved to allow export, add it to the rule's configuration and leave `restrictedExportConfig` out of step 2: its listing ID in `authorized_exportable_listing_ids` for the Terraform check, and its full name with the project number in `authorized_exportable_listing_names` for the check of deployed listings. Deployed listings are read where they are scanned; a listing in a multi-region location may not be among them, and the Terraform check covers it. A listing that leaves out its discovery type takes the one of its exchange. The rule reads the exchange when it is declared in the scanned files; an exchange managed elsewhere must be listed in `authorized_private_exchange_names_by_project_id`, or the listing is reported. IAM grants on the exchange are not read. Restricted export is checked on listings that share a BigQuery dataset. Replace `<project-id>`, `<location>`, `<exchange-id>` and `<listing-id>` with the listing named in the finding and its data exchange, and `<description>` and `<documentation>` with text for subscribers.
 
 ## References
 
 - [Manage listings](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-listings)
 - [Introduction to BigQuery sharing](https://docs.cloud.google.com/bigquery/docs/analytics-hub-introduction)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 Create a listing with an unauthorized configuration; it should be detected.

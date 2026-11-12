@@ -10,14 +10,14 @@ curl -X PATCH \
   "https://analyticshub.googleapis.com/v1/projects/<project-id>/locations/<location>/dataExchanges/<exchange-id>/listings/<listing-id>?updateMask=restrictedExportConfig"
 ```
 
-Subscribers can then no longer copy or export the shared data or its query results. The rule reads Terraform plans only, so a listing changed outside Terraform is not reported. Replace `<project-id>`, `<location>`, `<exchange-id>` and `<listing-id>` with the listing named in the finding and its data exchange.
+Subscribers can then no longer copy or export the shared data or its query results. Deployed listings are read where they are scanned; a listing in a multi-region location may not be among them, and the Terraform check covers it. It checks listings that share a BigQuery dataset; a listing that shares only a Pub/Sub topic is not checked, because restricted export applies to a shared dataset. Replace `<project-id>`, `<location>`, `<exchange-id>` and `<listing-id>` with the listing named in the finding and its data exchange.
 
 ## References
 
 - [Manage listings](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-listings)
 - [Introduction to BigQuery sharing](https://docs.cloud.google.com/bigquery/docs/analytics-hub-introduction)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 Enable the restricted export for listings outside the requirements; it should be detected.

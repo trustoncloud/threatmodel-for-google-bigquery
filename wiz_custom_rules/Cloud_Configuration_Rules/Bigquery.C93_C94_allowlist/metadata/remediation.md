@@ -22,16 +22,16 @@ The data exchange in the finding is listed in `required_dcr_exchange_names` in t
      "https://analyticshub.googleapis.com/v1/projects/<project-id>/locations/<location>/dataExchanges/<exchange-id>"
    ```
 
-4. In `required_dcr_exchange_names`, replace the old exchange's resource name with the clean room's, `projects/<project-number>/locations/<location>/dataExchanges/<clean-room-id>` (the name carries the project number).
+4. In `required_dcr_exchange_names`, replace the old exchange's resource name with the clean room's, `projects/<project-number>/locations/<location>/dataExchanges/<clean-room-id>` (the name carries the project number). Make the same change in the Terraform matcher's list, `required_dcr_exchange_names_by_project_id`, where the name carries the project ID.
 
-If the exchange is no longer required to be a clean room, remove its name from `required_dcr_exchange_names` in the rule's configuration instead. Replace `<project-id>`, `<project-number>`, `<location>` and `<exchange-id>` with the project, location and ID of the data exchange named in the finding, and `<clean-room-id>` and `<display-name>` with an ID (letters, numbers and underscores) and a display name for the new clean room.
+If the exchange is no longer required to be a clean room, remove its name from `required_dcr_exchange_names` and `required_dcr_exchange_names_by_project_id` in the rule's configuration instead. Replace `<project-id>`, `<project-number>`, `<location>` and `<exchange-id>` with the project, location and ID of the data exchange named in the finding, and `<clean-room-id>` and `<display-name>` with an ID (letters, numbers and underscores) and a display name for the new clean room.
 
 ## References
 
 - [Share sensitive data with data clean rooms](https://docs.cloud.google.com/bigquery/docs/data-clean-rooms)
 - [Manage data exchanges](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-exchanges)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 Configure a data exchange required to be a data clean room as a non-data clean room; it should be detected.

@@ -29,7 +29,7 @@ Replace `<project-id>`, `<location>` and `<exchange-id>` with the project, locat
 - [Share sensitive data with data clean rooms](https://docs.cloud.google.com/bigquery/docs/data-clean-rooms)
 - [Manage data exchanges](https://docs.cloud.google.com/bigquery/docs/analytics-hub-manage-exchanges)
 
-Checked 2026-10-06: links.
+Checked 2026-10-06: all links above resolve.
 
 ## Testing Compliance
 Configure a data exchange required to be a data clean room as a non-data clean room; it should be detected.

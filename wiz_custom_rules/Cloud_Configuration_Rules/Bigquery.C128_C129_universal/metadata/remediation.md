@@ -8,6 +8,8 @@ gcloud services disable cloudaicompanion.googleapis.com --project=<project-id>
 
 Disabling it turns off every Gemini for Google Cloud product in the project, BigQuery included. If the command refuses because the API was used in the last 30 days, was enabled in the last 3 days, or other enabled services depend on it, add `--force`. Replace `<project-id>` with the project in the finding.
 
+A project whose list of enabled services was not collected is skipped: without that list there is no evidence that the API is off, so the rule reports nothing for it.
+
 ## References
 
 - [gcloud services disable](https://docs.cloud.google.com/sdk/gcloud/reference/services/disable)
