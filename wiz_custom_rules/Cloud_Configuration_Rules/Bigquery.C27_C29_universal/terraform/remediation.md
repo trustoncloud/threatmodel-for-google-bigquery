@@ -19,7 +19,26 @@ resource "google_bigquery_table" "example" {
 }
 ```
 
-BigQuery's service account needs the Cloud KMS CryptoKey Encrypter/Decrypter role on the key.
+A transfer from a data source in `cmek_capable_transfer_sources` names a key too. BigQuery takes a key only on a transfer created with one, so recreate a transfer that has none with the key (for example with `terraform apply -replace`):
+
+```hcl
+resource "google_bigquery_data_transfer_config" "example" {
+  display_name           = "example-load"
+  location               = "US"
+  data_source_id         = "google_cloud_storage"
+  destination_dataset_id = google_bigquery_dataset.example.dataset_id
+
+  params                 = var.load_params
+
+  encryption_configuration {
+    kms_key_name = "projects/example-project/locations/us/keyRings/example-ring/cryptoKeys/example-key"
+  }
+}
+```
+
+A transfer from any other source is skipped, because it takes no key. Add a source to that list only when its BigQuery Data Transfer Service page documents a customer-managed key for it. A source taken from a variable or another resource is not known until apply, so that transfer must name a key.
+
+BigQuery's service account needs the Cloud KMS CryptoKey Encrypter/Decrypter role on each key.
 
 Two limits of a source scan:
 
@@ -32,5 +51,6 @@ A dataset with an `external_dataset_reference` block is skipped. Its data stays 
 
 - [google_bigquery_dataset (hashicorp/google 8.5.0)](https://registry.terraform.io/providers/hashicorp/google/8.5.0/docs/resources/bigquery_dataset)
 - [google_bigquery_table (hashicorp/google 8.5.0)](https://registry.terraform.io/providers/hashicorp/google/8.5.0/docs/resources/bigquery_table)
+- [google_bigquery_data_transfer_config (hashicorp/google 8.5.0)](https://registry.terraform.io/providers/hashicorp/google/8.5.0/docs/resources/bigquery_data_transfer_config)
 
-Checked 2026-10-06 against hashicorp/google 7.46.1 and 8.5.0: resources, arguments and links.
+Checked 2026-11-18 against hashicorp/google 7.46.1 and 8.5.0: resources, arguments and links.

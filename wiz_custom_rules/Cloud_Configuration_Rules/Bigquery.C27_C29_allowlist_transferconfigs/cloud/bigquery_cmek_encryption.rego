@@ -1,0 +1,196 @@
+package wiz
+
+# --- Configuration ---
+# Approved Cloud KMS keys, by full name: project, location, key ring and key
+# must all match. List each key without a version. BigQuery names a key,
+# never a key version, so an entry ending in /cryptoKeyVersions/<n> matches
+# nothing.
+authorized_kms_keys := {
+    "projects/my-secure-project/locations/us/keyRings/my-ring/cryptoKeys/finance-key",
+    "projects/my-secure-project/locations/us/keyRings/my-ring/cryptoKeys/hr-key"
+}
+
+# Transfer data sources that take a customer-managed key on the transfer
+# configuration. A transfer from any other source is skipped. Add a source
+# only when its BigQuery Data Transfer Service page documents a
+# customer-managed key for it.
+cmek_capable_transfer_sources := {
+    "amazon_s3",
+    "azure_blob_storage",
+    "ga4",
+    "google_cloud_storage",
+    "scheduled_query",
+    "snowflake_migration"
+}
+
+# --- Logic ---
+default result := "pass"
+
+is_dataset {
+    input.datasetReference
+}
+
+# A transfer configuration is named
+# "projects/<number>/locations/<location>/transferConfigs/<id>".
+is_transfer_config {
+    not is_dataset
+    contains(object.get(input, "name", ""), "/transferConfigs/")
+}
+
+transfer_source := s {
+    s := input.data_source_id
+    is_string(s)
+} else := ""
+
+is_cmek_capable_transfer {
+    is_transfer_config
+    cmek_capable_transfer_sources[transfer_source]
+}
+
+# A transfer configuration reports the key in effect, as a string wrapper.
+# The encryption block is absent when the transfer has no key.
+transfer_key_name := val {
+    val := input.encryption_configuration.kms_key_name.value
+    is_string(val)
+    val != ""
+} else := val {
+    val := input.encryption_configuration.kms_key_name
+    is_string(val)
+    val != ""
+} else := val {
+    val := input.encryptionConfiguration.kmsKeyName
+    is_string(val)
+    val != ""
+}
+
+# The encryption block is absent when the dataset uses Google-managed
+# encryption.
+key_name := val {
+    val := input.defaultEncryptionConfiguration.kmsKeyName
+    val != ""
+} else := val {
+    is_transfer_config
+    val := transfer_key_name
+}
+
+is_authorized {
+    tocm_kms_allowed(key_name, authorized_kms_keys)
+}
+
+# A linked dataset is a read-only view of data another project shares, and
+# names the dataset it is linked from in linkedDatasetSource. Its data is
+# encrypted where it is stored, so it has no default key to set and is
+# skipped.
+is_linked_dataset {
+    input.linkedDatasetSource
+}
+
+# --- Fail Conditions ---
+fail_no_cmek {
+    not key_name
+}
+
+fail_unauthorized_key {
+    key_name
+    not is_authorized
+}
+
+# --- Aggregation ---
+result := "skip" {
+    not is_dataset
+    not is_transfer_config
+} else := "skip" {
+    is_linked_dataset
+} else := "skip" {
+    is_transfer_config
+    not is_cmek_capable_transfer
+} else := "fail" {
+    fail_no_cmek
+} else := "fail" {
+    fail_unauthorized_key
+}
+
+# --- Metadata ---
+currentConfiguration := "Linked dataset: read-only, with no default key to set" {
+    is_linked_dataset
+} else := sprintf("Transfer configuration from source '%v', which takes no customer-managed key", [transfer_source]) {
+    is_transfer_config
+    not is_cmek_capable_transfer
+} else := "Transfer configuration has no CMEK, so its data uses Google-managed encryption" {
+    is_transfer_config
+    fail_no_cmek
+} else := sprintf("Transfer configuration key '%v' is not an approved key", [key_name]) {
+    is_transfer_config
+    fail_unauthorized_key
+} else := sprintf("Transfer configuration key is '%v'", [key_name]) {
+    is_transfer_config
+} else := "Dataset has no default CMEK, so new tables use Google-managed encryption" {
+    fail_no_cmek
+} else := sprintf("Dataset default key '%v' is not an approved key", [key_name]) {
+    fail_unauthorized_key
+} else := sprintf("Dataset default key is '%v'", [key_name]) {
+    result != "skip"
+}
+
+expectedConfiguration := "A transfer configuration from a source that takes a customer-managed key must name an approved Cloud KMS key (same project, location, key ring and key). This key covers the data the transfer stages and loads; the destination dataset's default key is checked on the dataset." {
+    is_transfer_config
+} else := "The dataset's default encryption key must be an approved Cloud KMS key (same project, location, key ring and key). Only the dataset default is checked: a table or model created before the default was set keeps its own key, and the key version in use is chosen in Cloud KMS."
+
+# --- Matching helpers ---
+# --- toc-match begin: kms v1 ---
+# Parts of a Cloud KMS key name, with or without "//cloudkms.googleapis.com/"
+# and with or without "/cryptoKeyVersions/V".
+tocm_kms_parts(name) := {"project": s[1], "location": lower(s[3]), "key_ring": s[5], "key": s[7], "version": ""} {
+    s := split(tocm_kms_rel(name), "/")
+    count(s) == 8
+    tocm_kms_shape(s)
+}
+
+tocm_kms_parts(name) := {"project": s[1], "location": lower(s[3]), "key_ring": s[5], "key": s[7], "version": s[9]} {
+    s := split(tocm_kms_rel(name), "/")
+    count(s) == 10
+    tocm_kms_shape(s)
+    s[8] == "cryptoKeyVersions"
+    s[9] != ""
+}
+
+tocm_kms_rel(name) := r {
+    is_string(name)
+    r := trim_prefix(trim_space(name), "//cloudkms.googleapis.com/")
+}
+
+tocm_kms_shape(s) {
+    s[0] == "projects"
+    s[2] == "locations"
+    s[4] == "keyRings"
+    s[6] == "cryptoKeys"
+    s[1] != ""
+    s[3] != ""
+    s[5] != ""
+    s[7] != ""
+}
+
+# A key is allowed when project, location, key ring and key all equal an
+# entry's. An entry with a version admits that version only; an entry
+# without one admits the key at any version.
+tocm_kms_allowed(name, allowed) {
+    k := tocm_kms_parts(name)
+    e := tocm_kms_parts(allowed[_])
+    k.project == e.project
+    k.location == e.location
+    k.key_ring == e.key_ring
+    k.key == e.key
+    e.version == ""
+}
+
+tocm_kms_allowed(name, allowed) {
+    k := tocm_kms_parts(name)
+    e := tocm_kms_parts(allowed[_])
+    k.project == e.project
+    k.location == e.location
+    k.key_ring == e.key_ring
+    k.key == e.key
+    e.version != ""
+    k.version == e.version
+}
+# --- toc-match end: kms v1 ---

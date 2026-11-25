@@ -10,14 +10,67 @@ authorized_kms_keys := {
     "projects/my-secure-project/locations/us/keyRings/my-ring/cryptoKeys/hr-key"
 }
 
+# Transfer data sources that take a customer-managed key on the transfer
+# configuration. A transfer from any other source is skipped. Add a source
+# only when its BigQuery Data Transfer Service page documents a
+# customer-managed key for it.
+cmek_capable_transfer_sources := {
+    "amazon_s3",
+    "azure_blob_storage",
+    "ga4",
+    "google_cloud_storage",
+    "scheduled_query",
+    "snowflake_migration"
+}
+
 # --- Logic ---
 default result := "pass"
+
+is_dataset {
+    input.datasetReference
+}
+
+# A transfer configuration is named
+# "projects/<number>/locations/<location>/transferConfigs/<id>".
+is_transfer_config {
+    not is_dataset
+    contains(object.get(input, "name", ""), "/transferConfigs/")
+}
+
+transfer_source := s {
+    s := input.data_source_id
+    is_string(s)
+} else := ""
+
+is_cmek_capable_transfer {
+    is_transfer_config
+    cmek_capable_transfer_sources[transfer_source]
+}
+
+# A transfer configuration reports the key in effect, as a string wrapper.
+# The encryption block is absent when the transfer has no key.
+transfer_key_name := val {
+    val := input.encryption_configuration.kms_key_name.value
+    is_string(val)
+    val != ""
+} else := val {
+    val := input.encryption_configuration.kms_key_name
+    is_string(val)
+    val != ""
+} else := val {
+    val := input.encryptionConfiguration.kmsKeyName
+    is_string(val)
+    val != ""
+}
 
 # The encryption block is absent when the dataset uses Google-managed
 # encryption.
 key_name := val {
     val := input.defaultEncryptionConfiguration.kmsKeyName
     val != ""
+} else := val {
+    is_transfer_config
+    val := transfer_key_name
 }
 
 is_authorized {
@@ -44,9 +97,13 @@ fail_unauthorized_key {
 
 # --- Aggregation ---
 result := "skip" {
-    not input.datasetReference
+    not is_dataset
+    not is_transfer_config
 } else := "skip" {
     is_linked_dataset
+} else := "skip" {
+    is_transfer_config
+    not is_cmek_capable_transfer
 } else := "fail" {
     fail_no_cmek
 } else := "fail" {
@@ -56,6 +113,17 @@ result := "skip" {
 # --- Metadata ---
 currentConfiguration := "Linked dataset: read-only, with no default key to set" {
     is_linked_dataset
+} else := sprintf("Transfer configuration from source '%v', which takes no customer-managed key", [transfer_source]) {
+    is_transfer_config
+    not is_cmek_capable_transfer
+} else := "Transfer configuration has no CMEK, so its data uses Google-managed encryption" {
+    is_transfer_config
+    fail_no_cmek
+} else := sprintf("Transfer configuration key '%v' is not an approved key", [key_name]) {
+    is_transfer_config
+    fail_unauthorized_key
+} else := sprintf("Transfer configuration key is '%v'", [key_name]) {
+    is_transfer_config
 } else := "Dataset has no default CMEK, so new tables use Google-managed encryption" {
     fail_no_cmek
 } else := sprintf("Dataset default key '%v' is not an approved key", [key_name]) {
@@ -64,7 +132,9 @@ currentConfiguration := "Linked dataset: read-only, with no default key to set" 
     result != "skip"
 }
 
-expectedConfiguration := "The dataset's default encryption key must be an approved Cloud KMS key (same project, location, key ring and key). Only the dataset default is checked: a table or model created before the default was set keeps its own key, and the key version in use is chosen in Cloud KMS."
+expectedConfiguration := "A transfer configuration from a source that takes a customer-managed key must name an approved Cloud KMS key (same project, location, key ring and key). This key covers the data the transfer stages and loads; the destination dataset's default key is checked on the dataset." {
+    is_transfer_config
+} else := "The dataset's default encryption key must be an approved Cloud KMS key (same project, location, key ring and key). Only the dataset default is checked: a table or model created before the default was set keeps its own key, and the key version in use is chosen in Cloud KMS."
 
 # --- Matching helpers ---
 # --- toc-match begin: kms v1 ---

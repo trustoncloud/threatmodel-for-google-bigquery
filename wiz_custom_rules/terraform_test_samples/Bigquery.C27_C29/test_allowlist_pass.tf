@@ -94,3 +94,72 @@ resource "google_bigquery_dataset" "federated" {
     connection      = "projects/analytics-prod/locations/aws-us-east-1/connections/glue"
   }
 }
+
+# Cloud Storage transfer with an approved key
+resource "google_bigquery_data_transfer_config" "gcs_load_approved" {
+  display_name           = "gcs_load_approved"
+  location               = "US"
+  data_source_id         = "google_cloud_storage"
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+
+  encryption_configuration {
+    kms_key_name = "projects/my-secure-project/locations/us/keyRings/my-ring/cryptoKeys/finance-key"
+  }
+}
+
+# Scheduled query with an approved key written with an upper case location
+resource "google_bigquery_data_transfer_config" "scheduled_query_approved" {
+  display_name           = "scheduled_query_approved"
+  location               = "US"
+  data_source_id         = "scheduled_query"
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+
+  encryption_configuration {
+    kms_key_name = "projects/my-secure-project/locations/US/keyRings/my-ring/cryptoKeys/hr-key"
+  }
+}
+
+# A transfer from a source that takes no customer-managed key is out of
+# scope
+resource "google_bigquery_data_transfer_config" "dataset_copy" {
+  display_name           = "dataset_copy"
+  location               = "US"
+  data_source_id         = "cross_region_copy"
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+}
+
+# A partner connector, named by an opaque data source ID, is out of scope
+resource "google_bigquery_data_transfer_config" "partner_connector" {
+  display_name           = "partner_connector"
+  location               = "US"
+  data_source_id         = "11111111-2222-4333-8444-555555555555"
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+}

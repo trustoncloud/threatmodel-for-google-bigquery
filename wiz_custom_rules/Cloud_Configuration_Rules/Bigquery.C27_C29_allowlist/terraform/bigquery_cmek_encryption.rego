@@ -13,6 +13,18 @@ authorized_kms_keys := {
     "projects/my-secure-project/locations/us/keyRings/my-ring/cryptoKeys/hr-key"
 }
 
+# Transfer data sources that take a customer-managed key on the transfer
+# configuration. Add a source only when its BigQuery Data Transfer Service
+# page documents a customer-managed key for it.
+cmek_capable_transfer_sources := {
+    "amazon_s3",
+    "azure_blob_storage",
+    "ga4",
+    "google_cloud_storage",
+    "scheduled_query",
+    "snowflake_migration"
+}
+
 # --- Helpers ---
 key_authorized(key) {
     tocm_kms_allowed(key, authorized_kms_keys)
@@ -115,6 +127,22 @@ inherited_keys(tbl, tbl_doc) := {key |
     ds := input.document[ds_doc].resource.google_bigquery_dataset[dsname]
     table_in_dataset(tbl, tbl_doc, ds, ds_doc, dsname)
     key := dataset_key(ds)
+}
+
+transfer_key(tc) := key {
+    cfg := terraLib.getValueArrayOrObject(tc.encryption_configuration)
+    key := cfg.kms_key_name
+    key != ""
+}
+
+# A transfer is in scope when its source takes a customer-managed key, or
+# when the source is not known until apply.
+cmek_capable_transfer(tc) {
+    cmek_capable_transfer_sources[tc.data_source_id]
+}
+
+cmek_capable_transfer(tc) {
+    tocm_tf_unresolved(tc.data_source_id)
 }
 
 # A key set from a variable or another resource is not known until apply,
@@ -220,6 +248,45 @@ WizPolicy[result] {
         "keyExpectedValue": sprintf("kms_key_name must be one of the approved keys (same project, location, key ring and key): %v", [authorized_kms_keys]),
         "keyActualValue": key_problem(key),
         "resourceTags": object.get(tbl, "labels", {}),
+    }
+}
+
+# Finding: transfer configuration without a key.
+WizPolicy[result] {
+    document := input.document[i]
+    tc := document.resource.google_bigquery_data_transfer_config[name]
+    cmek_capable_transfer(tc)
+    not transfer_key(tc)
+
+    result := {
+        "documentId": document.id,
+        "resourceType": "google_bigquery_data_transfer_config",
+        "resourceName": terraLib.get_resource_name(tc, name),
+        "searchKey": sprintf("google_bigquery_data_transfer_config[%s].encryption_configuration.kms_key_name", [name]),
+        "issueType": "MissingAttribute",
+        "keyExpectedValue": "encryption_configuration.kms_key_name must be set to an approved CMEK",
+        "keyActualValue": sprintf("transfer from '%v' uses Google-managed encryption (no CMEK)", [tc.data_source_id]),
+        "resourceTags": object.get(tc, "labels", {}),
+    }
+}
+
+# Finding: transfer configuration key not in the approved set.
+WizPolicy[result] {
+    document := input.document[i]
+    tc := document.resource.google_bigquery_data_transfer_config[name]
+    cmek_capable_transfer(tc)
+    key := transfer_key(tc)
+    not key_authorized(key)
+
+    result := {
+        "documentId": document.id,
+        "resourceType": "google_bigquery_data_transfer_config",
+        "resourceName": terraLib.get_resource_name(tc, name),
+        "searchKey": sprintf("google_bigquery_data_transfer_config[%s].encryption_configuration.kms_key_name", [name]),
+        "issueType": "IncorrectValue",
+        "keyExpectedValue": sprintf("kms_key_name must be one of the approved keys (same project, location, key ring and key): %v", [authorized_kms_keys]),
+        "keyActualValue": key_problem(key),
+        "resourceTags": object.get(tc, "labels", {}),
     }
 }
 
