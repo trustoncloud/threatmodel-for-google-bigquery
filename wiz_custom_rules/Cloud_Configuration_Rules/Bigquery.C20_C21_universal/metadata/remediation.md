@@ -1,27 +1,46 @@
 # Remediation
 
-The Sensitive Data Protection job trigger in the finding scans BigQuery with no inspection rules: it names no inspection template and carries no inspection configuration. Give it an inspection template, or an inspection configuration that lists the infoTypes to detect.
+The Sensitive Data Protection job trigger in the finding scans BigQuery with no inspection rules (it names no inspection template and carries no inspection configuration), or it is paused or cancelled and runs no scans. Give it an inspection template, or an inspection configuration that lists the infoTypes to detect, and make sure it is `HEALTHY`.
 
 No GA `gcloud` or `bq` command edits a job trigger, so use the API method `projects.locations.jobTriggers.patch`:
 
-1. Read the trigger:
+1. Save the trigger's error history, once per trigger. DLP can pause a trigger after repeated errors, which it lists in `errors`, and any change to the trigger clears that list. If you repeat these steps, keep the first `trigger-before.json` and skip this command:
 
    ```bash
    curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-     "https://dlp.googleapis.com/v2/projects/<project-id>/locations/<location>/jobTriggers/<trigger-id>"
+     -H "x-goog-user-project: <quota-project-id>" \
+     "https://dlp.googleapis.com/v2/projects/<project-id>/locations/<location>/jobTriggers/<trigger-id>" > trigger-before.json
    ```
 
-2. Copy its `inspectJob` object into `request.json`, set `inspectTemplateName` to an inspection template (or add an `inspectConfig` with its `infoTypes`), and wrap it as `{"jobTrigger": {"inspectJob": ...}, "updateMask": "inspectJob"}`.
+2. Read the current trigger, and decide from it rather than from the finding:
 
-3. Apply the change:
+   ```bash
+   curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+     -H "x-goog-user-project: <quota-project-id>" \
+     "https://dlp.googleapis.com/v2/projects/<project-id>/locations/<location>/jobTriggers/<trigger-id>" > trigger-now.json
+   ```
+
+   If `inspectJob` has neither an `inspectTemplateName` nor an `inspectConfig`, add inspection rules: copy the `inspectJob` object from `trigger-now.json` into a new `rules.json`, set `inspectTemplateName` to an inspection template (or add an `inspectConfig` with its `infoTypes`), wrap it as `{"jobTrigger": {"inspectJob": ...}, "updateMask": "inspectJob"}`, and apply it. Skip this step when the trigger already has rules.
 
    ```bash
    curl -s -X PATCH -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-     -H "Content-Type: application/json" -d @request.json \
+     -H "x-goog-user-project: <quota-project-id>" \
+     -H "Content-Type: application/json" -d @rules.json \
      "https://dlp.googleapis.com/v2/projects/<project-id>/locations/<location>/jobTriggers/<trigger-id>"
    ```
 
-Replace `<project-id>`, `<location>` and `<trigger-id>` with the trigger in the finding; a trigger created without a location is in `global`. The rule has no cloud scan and judges only triggers declared in Terraform, so review triggers created outside Terraform the same way.
+3. Read the trigger again with the command in step 2, writing to `trigger-after.json`. Check that `inspectJob` sets `inspectTemplateName` or an `inspectConfig`.
+
+4. If `status` is `PAUSED`, resume it only once step 3 holds and you have fixed the cause of any `errors` in `trigger-before.json` (for example, a permission the DLP service agent lacks on the table), so it neither scans without rules nor fails and pauses again. Write `{"jobTrigger": {"status": "HEALTHY"}, "updateMask": "status"}` to a new `resume.json` and apply it:
+
+   ```bash
+   curl -s -X PATCH -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+     -H "x-goog-user-project: <quota-project-id>" \
+     -H "Content-Type: application/json" -d @resume.json \
+     "https://dlp.googleapis.com/v2/projects/<project-id>/locations/<location>/jobTriggers/<trigger-id>"
+   ```
+
+Replace `<project-id>`, `<location>` and `<trigger-id>` with the trigger in the finding. DLP refuses a user's credentials that name no quota project, so each command names one in `x-goog-user-project`: replace `<quota-project-id>` with a project that has the DLP API enabled and where you hold `serviceusage.services.use` (the Service Usage Consumer role grants it), often the trigger's own project. A trigger created without a location is in `global`. A cancelled trigger cannot be resumed, so create a replacement trigger and delete the cancelled one.
 
 What the rule cannot show:
 

@@ -1,7 +1,9 @@
-Give every trigger that scans BigQuery its inspection rules through `inspect_template_name`:
+Give every trigger that scans BigQuery its inspection rules through `inspect_template_name`, and leave `status` unset or `HEALTHY`:
 
 ```hcl
 resource "google_data_loss_prevention_job_trigger" "example" {
+  status = "HEALTHY"
+
   inspect_job {
     inspect_template_name = "projects/my-project/inspectTemplates/my-template"
 
@@ -14,7 +16,7 @@ resource "google_data_loss_prevention_job_trigger" "example" {
 }
 ```
 
-An inline `inspect_config` block that lists the `info_types` to detect also satisfies the rule.
+An inline `inspect_config` block that lists the `info_types` to detect also satisfies the rule. A `PAUSED` or `CANCELLED` trigger runs no scans and is reported.
 
 What the rule cannot show:
 

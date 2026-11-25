@@ -27,11 +27,11 @@ The dataset in the finding has no default customer-managed encryption key (CMEK)
      <project-id>:<dataset>.<table> <project-id>:<dataset>.<table>
    ```
 
-If the key in the finding is approved, add its full name to `authorized_kms_keys` in the rule's configuration instead. A key matches an entry only when project, location, key ring and key are all the same, so a key with a longer name or in another key ring is reported. List the key without a version: BigQuery names a key, never a key version, so an entry ending in `/cryptoKeyVersions/<n>` matches nothing. BigQuery encrypts with the key's primary version, which is set in Cloud KMS and is not checked here.
+If the key in the finding is approved, add its full name to `authorized_kms_keys` in the rule's configuration instead, here and in the copy of the configuration that the rule for transfer configurations of this control carries. A key matches an entry only when project, location, key ring and key are all the same, so a key with a longer name or in another key ring is reported. List the key without a version: BigQuery names a key, never a key version, so an entry ending in `/cryptoKeyVersions/<n>` matches nothing. BigQuery encrypts with the key's primary version, which is set in Cloud KMS and is not checked here.
 
 Replace `<project-id>` and `<dataset>` with the dataset named in the finding, `<table>` with each of its tables, `<project-number>` with that project's number, and the key path with the approved key. For a table reported by the Terraform matcher, step 3 is enough.
 
-The cloud rule reads datasets only. It does not see the key of a table or model that already exists, and a table created before the default was set keeps its own key, so run step 3 for every existing table.
+This rule reads datasets; transfer configurations have a rule of their own in this control. It does not see the key of a table or model that already exists, and a table created before the default was set keeps its own key, so run step 3 for every existing table.
 
 A linked dataset is skipped. It is a read-only view of data another project shares: the data is encrypted where it is stored, so the linked dataset has no default key to set.
 

@@ -31,10 +31,10 @@ tags let you filter in the Wiz console by either ID.
 
 A BigQuery particularity: Wiz's CCR platform ingests only a subset of
 BigQuery resource types (datasets, transfer configurations, Analytics Hub
-data exchanges, listings and subscriptions, and projects). 13 of the 30 rules
-therefore ship **Terraform-only**: their resource types (tables, jobs,
-connections, reservations, row access policies, policy tags, data policies,
-DLP triggers) have no runtime scan surface, and the Terraform matcher is the
+data exchanges, listings and subscriptions, projects, and DLP job triggers).
+12 of the 30 rules therefore ship **Terraform-only**: their resource types
+(tables, jobs, connections, reservations, row access policies, policy tags,
+data policies) have no runtime scan surface, and the Terraform matcher is the
 enforcement point. Each such rule's description states this explicitly.
 
 Five ThreatModel assurance controls are not deliverable as rules: BigQuery
@@ -49,8 +49,9 @@ the rationale or the built-in for each.
 
 ## What is in this delivery
 
-30 controls, delivered as 39 rule folders (8 controls ship two modes, and
-Bigquery.C108_C109 ships a second rule for subscriptions).
+30 controls, delivered as 41 rule folders (8 controls ship two modes,
+Bigquery.C108_C109 ships a second rule for subscriptions, and
+Bigquery.C27_C29 ships a second rule per mode for transfer configurations).
 
 | Rule | Severity | What it flags |
 |---|---|---|
@@ -60,9 +61,9 @@ Bigquery.C108_C109 ships a second rule for subscriptions).
 | Bigquery.C4_C5 | Medium | Datasets missing the backup-schedule label or carrying an unauthorized schedule (the label is no proof of a backup) |
 | Bigquery.C10_C11 | Medium | Policy tag and taxonomy grants, and the Fine-Grained Reader role on a project, folder or organization, to entities outside your authorized set |
 | Bigquery.C18_C19 | Medium | Datasets in unauthorized locations or with unauthorized expiration settings |
-| Bigquery.C20_C21 | Medium | BigQuery DLP job triggers without an authorized inspect template (or any inspection rules); redaction and trigger coverage are not checked |
+| Bigquery.C20_C21 | Medium | BigQuery DLP job triggers that are paused, lack an authorized inspect template (or any inspection rules), or override it inline; redaction and trigger coverage are not checked |
 | Bigquery.C23_C24 | Medium | External tables and load jobs reading from sources that are not approved, extract jobs writing to destinations that are not approved, and load, extract, copy and query jobs reading or writing tables that are not approved |
-| Bigquery.C27_C29 | Medium | Datasets without a default CMEK or with a key that is not approved, and Terraform tables with no key of their own and none to inherit |
+| Bigquery.C27_C29 | Medium | Datasets without a default CMEK or with a key that is not approved, Terraform tables with no key of their own and none to inherit, and transfer configurations from a source that takes a CMEK but name none or one that is not approved |
 | Bigquery.C33_C34 | Medium | Tables with no expiration time of their own and no dataset default to inherit (infinite retention) |
 | Bigquery.C36_C37 | Medium | Sensitive columns declared with a type other than BYTES, and queries naming sensitive tables that call no AEAD function |
 | Bigquery.C45_C46 | Medium | Data policy (column masking) grants, and the Masked Reader role on a project, folder or organization, to members outside your authorized set |
@@ -91,10 +92,10 @@ Bigquery.C108_C109 ships a second rule for subscriptions).
 |---|---|
 | Controls | 30 |
 | Rule folders (control x mode, plus one for subscriptions) | 39 |
-| Rules with a cloud matcher | 17 controls (24 folders) |
+| Rules with a cloud matcher | 18 controls (26 folders) |
 | Rules with a Terraform matcher | all 30 controls (38 folders) |
-| Terraform-only rules | 13 controls (no Wiz runtime surface for their types) |
-| Cloud OPA tests passing | 248 of 248 |
+| Terraform-only rules | 12 controls (no Wiz runtime surface for their types) |
+| Cloud OPA tests passing | 293 of 293 |
 | Terraform fixture checks passing | 76 of 76 |
 
 Modes shipped per control:
@@ -113,11 +114,12 @@ Modes shipped per control:
 | Wiz native type | Rules |
 |---|---|
 | `bigquery#dataset` | Bigquery.C4_C5, C7_C8, C18_C19, C27_C29, C51_C52, C108_C109, C117_C118 |
-| `bigquerydatatransfer#TransferConfig` | Bigquery.C67_C68 |
+| `bigquerydatatransfer#TransferConfig` | Bigquery.C27_C29 (its transfer configurations rule), C67_C68 |
 | `analyticshub#DataExchange` | Bigquery.C93_C94, C96_C97, C111_C112 |
 | `analyticshub#listing` | Bigquery.C99_C100, C101_C102, C114_C115 |
 | `analyticshub#subscription` | Bigquery.C104_C105, C108_C109 (its subscriptions rule) |
 | `project#instance` | Bigquery.C128_C129, C39_C40 |
+| `dlp#jobtrigger` | Bigquery.C20_C21 |
 
 | Terraform resource family | Rules |
 |---|---|
@@ -130,7 +132,7 @@ Modes shipped per control:
 | IAM trios (policy tags, data policies) | C11, C46 |
 | `google_bigquery_connection` + org policy resources (new and legacy) | C40 |
 | `google_bigquery_reservation` (+ assignment) | C62 |
-| `google_bigquery_data_transfer_config` | C68 |
+| `google_bigquery_data_transfer_config` | C29, C68 |
 | `google_bigquery_row_access_policy` | C14 |
 | `google_data_loss_prevention_job_trigger` | C21 |
 | `google_project_service` | C129 |
@@ -249,7 +251,7 @@ scan does not cover that value.
 | Bigquery.C18_C19 | Authorized locations and expiration values |
 | Bigquery.C20_C21 | Authorized DLP inspect template names |
 | Bigquery.C23_C24 | Approved Cloud Storage sources, approved Cloud Storage export destinations, approved hosts for other sources, and approved source and destination tables by full name with the project ID |
-| Bigquery.C27_C29 | Approved CMEK keys, by full key name without a version |
+| Bigquery.C27_C29 | Approved CMEK keys, by full key name without a version, and the transfer sources that take a CMEK |
 | Bigquery.C36_C37 | Sensitive columns per table, keyed `dataset.table`, AND sensitive table references (keep aligned) |
 | Bigquery.C39_C40 | Projects authorized to use Omni, by project ID (the same list in both matchers) |
 | Bigquery.C45_C46 | Authorized members for data policies and the Masked Reader role |
@@ -270,10 +272,10 @@ scan does not cover that value.
 
 ### Notes on specific rules
 
-- **Terraform-only rules (13 of 30)**: Wiz's CCR platform does not ingest
+- **Terraform-only rules (12 of 30)**: Wiz's CCR platform does not ingest
   BigQuery tables, jobs, models, reservations, row access policies, policy
-  tags, or data policies. It does ingest BigQuery connections and DLP job
-  triggers, which this pack has no cloud matcher for yet. For controls on all
+  tags, or data policies. It does ingest BigQuery connections, which this
+  pack has no cloud matcher for yet. For controls on all
   of these types, the Terraform matcher is the enforcement point and there
   are no runtime findings.
 - **Analytics Hub cloud matchers (C93_C94, C96_C97, C99_C100, C101_C102,
@@ -367,10 +369,12 @@ scan does not cover that value.
 - **Bigquery.C4_C5** checks that each dataset carries a label naming an
   approved backup schedule. A label does not prove a backup exists, ran or
   can be restored, and tables and models are not checked.
-- **Bigquery.C20_C21** reads a DLP trigger's inspection rules. An inspection
-  job reports what it finds and changes nothing, so the rule does not show
-  that data was redacted, and a sensitive table with no trigger gets no
-  finding.
+- **Bigquery.C20_C21** reads a DLP trigger's inspection rules and status,
+  on deployed triggers and in Terraform. Triggers that scan Cloud Storage or
+  other stores are skipped.
+  An inspection job reports what it finds and changes nothing, so the rule
+  does not show that data was redacted, and a sensitive table with no
+  trigger gets no finding.
 - **Bigquery.C23_C24** compares Cloud Storage and other source URIs, and the
   tables a load, extract, copy or query job reads or writes. A table list
   entry that names a dataset approves every table in it. Listings,
@@ -380,6 +384,10 @@ scan does not cover that value.
   name together. BigQuery names a key, never a key version, so list keys
   without a version. In Terraform a table with no key of its own inherits
   the default key of its dataset when that dataset is in the same scan.
+  Transfer configurations are checked only for sources that take a
+  customer-managed key (`cmek_capable_transfer_sources`); others are
+  skipped. A key can be added to a transfer only when it is created, so a
+  transfer created without one has to be recreated with the key.
 - **Bigquery.C76_C77** reads a job's write mode, create mode and schema
   update options.
   It does not read the query text, so `DROP`, `DELETE` and `TRUNCATE`

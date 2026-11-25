@@ -126,3 +126,99 @@ resource "google_bigquery_table" "other_provider_table" {
   dataset_id = "shared_name_data"
   table_id   = "other_provider_table"
 }
+
+# Cloud Storage transfer without a key: 1 finding
+resource "google_bigquery_data_transfer_config" "gcs_load_no_key" {
+  display_name           = "gcs_load_no_key"
+  location               = "US"
+  data_source_id         = "google_cloud_storage"
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+}
+
+# Scheduled query with an unauthorized key: 1 finding
+resource "google_bigquery_data_transfer_config" "scheduled_query_rogue_key" {
+  display_name           = "scheduled_query_rogue_key"
+  location               = "US"
+  data_source_id         = "scheduled_query"
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+
+  encryption_configuration {
+    kms_key_name = "projects/rogue-project/locations/us/keyRings/x/cryptoKeys/rogue-key"
+  }
+}
+
+# Amazon S3 transfer with a lookalike of the approved key: 1 finding
+resource "google_bigquery_data_transfer_config" "s3_lookalike_key" {
+  display_name           = "s3_lookalike_key"
+  location               = "US"
+  data_source_id         = "amazon_s3"
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+
+  encryption_configuration {
+    kms_key_name = "projects/my-secure-project/locations/us/keyRings/my-ring/cryptoKeys/finance-key-rogue"
+  }
+}
+
+# Key taken from a variable with no default, not known until apply: 1 finding
+variable "transfer_kms_key" {
+  type = string
+}
+
+resource "google_bigquery_data_transfer_config" "gcs_load_key_from_variable" {
+  display_name           = "gcs_load_key_from_variable"
+  location               = "US"
+  data_source_id         = "google_cloud_storage"
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+
+  encryption_configuration {
+    kms_key_name = var.transfer_kms_key
+  }
+}
+
+# Source taken from a variable with no default, so the transfer may take a
+# key, and none is set: 1 finding
+variable "transfer_source" {
+  type = string
+}
+
+resource "google_bigquery_data_transfer_config" "source_from_variable" {
+  display_name           = "source_from_variable"
+  location               = "US"
+  data_source_id         = var.transfer_source
+  destination_dataset_id = "secured_data"
+  schedule               = "every 24 hours"
+
+  params = {
+    data_path_template              = "gs://example-landing-bucket/inbound/*.csv"
+    destination_table_name_template = "landing"
+    file_format                     = "CSV"
+  }
+}

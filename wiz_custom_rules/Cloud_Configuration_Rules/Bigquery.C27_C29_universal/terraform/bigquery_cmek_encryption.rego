@@ -2,9 +2,40 @@ package wiz
 
 import data.generic.terraform as terraLib
 
+# --- Configuration ---
+# Keep in sync with the cloud matcher.
+# Transfer data sources that take a customer-managed key on the transfer
+# configuration. Add a source only when its BigQuery Data Transfer Service
+# page documents a customer-managed key for it.
+cmek_capable_transfer_sources := {
+    "amazon_s3",
+    "azure_blob_storage",
+    "ga4",
+    "google_cloud_storage",
+    "scheduled_query",
+    "snowflake_migration"
+}
+
 # --- Logic ---
-# Universal baseline: every dataset has a default CMEK, and every table has
-# its own key or inherits its dataset's default key.
+# Universal baseline: every dataset has a default CMEK, every table has its
+# own key or inherits its dataset's default key, and every transfer from a
+# source that takes a key has one.
+
+transfer_key(tc) := key {
+    cfg := terraLib.getValueArrayOrObject(tc.encryption_configuration)
+    key := cfg.kms_key_name
+    key != ""
+}
+
+# A transfer is in scope when its source takes a customer-managed key, or
+# when the source is not known until apply.
+cmek_capable_transfer(tc) {
+    cmek_capable_transfer_sources[tc.data_source_id]
+}
+
+cmek_capable_transfer(tc) {
+    tocm_tf_unresolved(tc.data_source_id)
+}
 
 dataset_key(ds) := key {
     cfg := terraLib.getValueArrayOrObject(ds.default_encryption_configuration)
@@ -141,6 +172,25 @@ WizPolicy[result] {
         "keyExpectedValue": "encryption_configuration.kms_key_name must be set, or the table's dataset in this scan must have a default key (CMEK required)",
         "keyActualValue": "table has no key of its own and no dataset default key in this scan (Google-managed encryption)",
         "resourceTags": object.get(tbl, "labels", {}),
+    }
+}
+
+# Finding: transfer configuration without a key.
+WizPolicy[result] {
+    document := input.document[i]
+    tc := document.resource.google_bigquery_data_transfer_config[name]
+    cmek_capable_transfer(tc)
+    not transfer_key(tc)
+
+    result := {
+        "documentId": document.id,
+        "resourceType": "google_bigquery_data_transfer_config",
+        "resourceName": terraLib.get_resource_name(tc, name),
+        "searchKey": sprintf("google_bigquery_data_transfer_config[%s].encryption_configuration.kms_key_name", [name]),
+        "issueType": "MissingAttribute",
+        "keyExpectedValue": "encryption_configuration.kms_key_name must be set (CMEK required)",
+        "keyActualValue": sprintf("transfer from '%v' uses Google-managed encryption (no CMEK)", [tc.data_source_id]),
+        "resourceTags": object.get(tc, "labels", {}),
     }
 }
 

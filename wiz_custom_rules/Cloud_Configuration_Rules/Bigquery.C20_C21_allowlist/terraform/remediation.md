@@ -1,7 +1,9 @@
-Point every trigger that scans BigQuery at a template listed in `authorized_templates`, or, once the template is approved, add its full name to that list in the rule's configuration:
+Point every trigger that scans BigQuery at a template listed in `authorized_templates`, with no inline `inspect_config` and a `status` of `HEALTHY` or unset, or, once the template is approved, add its full name to that list in the rule's configuration:
 
 ```hcl
 resource "google_data_loss_prevention_job_trigger" "example" {
+  status = "HEALTHY"
+
   inspect_job {
     inspect_template_name = "projects/my-project/inspectTemplates/strict-pii-v1"
 
@@ -14,7 +16,7 @@ resource "google_data_loss_prevention_job_trigger" "example" {
 }
 ```
 
-The template name is compared exactly as written, so use the same form as the list. An inline `inspect_config` without an authorized template is reported.
+DLP merges an inline `inspect_config` into the template, so any inline `inspect_config` is reported, including one built by a `dynamic` block unless its `for_each` is a literal empty collection such as `[]` or `toset([])`. A template in the global location may be written with or without `locations/global`. A template name taken from a variable or another resource is not known until apply and is reported. A `PAUSED` or `CANCELLED` trigger runs no scans and is reported.
 
 What the rule cannot show:
 
